@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="namespace" default="panda1" />
+  <arg name="load_gripper" default="false" />
+  <arg name="launch_gazebo" default="true" />
+  <!-- set hardware interface in robot description (set to VelocityJointInterface for velocity control) -->
+  <arg name="hw_interface" default="EffortJointInterface" />
+  <!-- When using the EffortJointInterface, this  arg decides, if the position or the effort controller will be started -->
+  <arg name="effort_position_controller" default="false" />
+  <arg name="xyz" default="0 0 0" />
+  <arg name="rpy" default="0 0 0" />
+  <!-- By setting this to 'true', either the position_joint_trajectory or the velocity_jointgroup controller,
+  depending on the arg 'hw_interface' will be started by this launchfile -->
+  <arg name="spawn_controller" default="true" />
+
+  <!-- arguments for gazebo -->
+  <arg name="paused" default="true"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="gazebo_world" default="$(find franka_gazebo)/launch/franka.world"/>
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(arg launch_gazebo)" >
+    <arg name="world_name" value="$(arg gazebo_world)" />
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm.urdf.xacro' connected_to:='world' hw_interface:='$(arg hw_interface)' xyz:='$(arg xyz)' rpy:='$(arg rpy)' namespace:='/$(arg namespace)/'" unless="$(arg load_gripper)" />
+
+  <group ns="$(arg namespace)">
+    <!--param name="tf_prefix" value="$(arg namespace)" /-->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm_hand.urdf.xacro' connected_to:='world' hw_interface:='$(arg hw_interface)' xyz:='$(arg xyz)' rpy:='$(arg rpy)' namespace:='/$(arg namespace)/'" if="$(arg load_gripper)" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm.urdf.xacro' connected_to:='world' hw_interface:='$(arg hw_interface)' xyz:='$(arg xyz)' rpy:='$(arg rpy)' namespace:='/$(arg namespace)/'" unless="$(arg load_gripper)" />
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+          args="-urdf -model $(arg namespace) -param robot_description
+          -J panda_joint1 0.0
+          -J panda_joint2 0.0
+          -J panda_joint3 0.0
+          -J panda_joint4 0.0
+          -J panda_joint5 0.0
+          -J panda_joint6 0.0
+          -J panda_joint7 0.0
+          -J panda_finger_joint1 0.04
+          -J panda_finger_joint2 0.04
+          -unpause"
+          respawn="false" output="screen" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="30.0" />
+    </node>
+
+    <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
+    <rosparam command="load" file="$(find franka_gazebo)/config/gazebo_controllers.yaml" />
+
+    <node name="sim_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_sim_state_controller franka_left_finger_controller franka_right_finger_controller" if="$(arg load_gripper)"/>
+    <node name="sim_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_sim_state_controller" unless="$(arg load_gripper)"/>
+
+    <!-- Start script that provides the action interface needed by moveIt to control the gripper -->
+    <node name="franka_gripper" pkg="franka_gazebo" type="gripper_action_server.py" respawn="false" output="screen" args="" if="$(arg load_gripper)"/>
+
+    <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
+
+    <node name="motion_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="position_joint_trajectory_controller" if="$(eval spawn_controller and hw_interface=='PositionJointInterface')"/>
+    <node name="motion_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="velocity_jointgroup_controller" if="$(eval spawn_controller and hw_interface=='VelocityJointInterface')"/>
+    <node name="motion_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="effort_jointgroup_controller" if="$(eval spawn_controller and hw_interface=='EffortJointInterface' and not effort_position_controller)" />
+    <node name="motion_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="effort_position_jointgroup_controller" if="$(eval spawn_controller and hw_interface=='EffortJointInterface' and effort_position_controller)" >
+      <remap from="/panda1/robot_description" to="/robot_description"/>
+    </node>
+    <!--node name="rqt_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" /-->
+  </group>
+</launch>

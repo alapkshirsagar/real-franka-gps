@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+  <xacro:arg name="hw_interface" default="PositionJointInterface"/>
+  <xacro:arg name="xyz" default="0 0 0"/>
+  <xacro:arg name="rpy" default="0 0 0"/>
+  <xacro:arg name="namespace" default="/"/>
+  <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro" />
+  <link name="world"/>
+  <xacro:panda_arm connected_to="world" hw_interface="$(arg hw_interface)" xyz="$(arg xyz)" rpy="$(arg rpy)"/>
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>$(arg namespace)</robotNamespace>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+</robot>

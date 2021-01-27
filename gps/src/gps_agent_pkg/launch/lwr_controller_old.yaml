@@ -1,0 +1,8 @@
+active_arm_joint_name_1: "lwr_a1_joint"
+active_arm_joint_name_2: "lwr_a2_joint"
+active_arm_joint_name_3: "lwr_e1_joint"
+active_arm_joint_name_4: "lwr_a3_joint"
+active_arm_joint_name_5: "lwr_a4_joint"
+active_arm_joint_name_6: "lwr_a5_joint"
+active_arm_joint_name_7: "lwr_a6_joint"
+

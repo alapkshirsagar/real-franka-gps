@@ -1,0 +1,16 @@
+# make the namespace match the name you use to instantiate the arm in the xacro
+lwr:
+  root: panda_link0
+  tip: panda_link8
+  # joints is not used, since with the robot name and urdf name conventions, the parsing is hardcoded
+  # but as a general solution, joint names could be loaded as well, like controllers do
+  joints: 
+  - panda_joint1
+  - panda_joint2
+  - panda_joint3
+  - panda_joint4
+  - panda_joint5
+  - panda_joint6
+  - panda_joint7
+  - panda_finger_joint1
+  - panda_finger_joint2

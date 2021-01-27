@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="namespace" default="panda1" />
+  <arg name="launch_gazebo" default="true" />
+  <arg name="load_gripper" default="true" />
+  <arg name="launch_rviz" default="true" />
+  <arg name="gazebo_world" default="$(find franka_gazebo)/launch/franka.world"/>
+  <arg name="xyz" default="0 0 0" />
+  <arg name="rpy" default="0 0 0" />
+
+  <include file="$(find franka_gazebo)/launch/franka_gazebo.launch" >
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+    <arg name="gazebo_world" value="$(arg gazebo_world)"/>
+    <arg name="hw_interface" value="PositionJointInterface" />
+    <arg name="xyz" value="$(arg xyz)" />
+    <arg name="rpy" value="$(arg rpy)" />
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="launch_gazebo" value="$(arg launch_gazebo)" />
+  </include>
+
+  <group ns="$(arg namespace)">
+    <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+      <arg name="load_gripper" value="$(arg load_gripper)" />
+    </include>
+
+    <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch" if="$(arg launch_rviz)" />
+  </group>
+</launch>

@@ -1,0 +1,5 @@
+<library path="lib/libgps_agent_lib">
+  <class name="gps_agent_pkg/KUKALWRPlugin"
+  		 type="gps_control::KUKALWRPlugin"
+  		 base_class_type="controller_interface::ControllerBase" />
+</library>

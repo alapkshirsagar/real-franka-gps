@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================= -->
+<!-- lwr_gazebo.launch                                                       -->
+<!-- Author: Jack White                                                      -->
+<!-- Description: Launches the Gazebo simulation of the KUKA LWR 4+ and      -->
+<!--              guided policy search.                                      -->
+<!-- ======================================================================= -->
+
+<launch>
+  <!-- Set debug on -->
+  <env name = "ROSCONSOLE_CONFIG_FILE" 
+       value = "$(find gps_agent_pkg)/launch/custom_rosconsole.conf" />
+
+  <arg name = "robot_name" default = "single_lwr_robot" />
+
+  <!-- Upload robot description to ros parameter server -->
+  <param name = "robot_description" command = "$(find xacro)/xacro 
+    --inorder $(find single_lwr_robot)/robot/$(arg robot_name).urdf.xacro" />
+
+  <!-- Set up state publishers. Don't know if this is needed for GPS -->
+  <node name = "joint_state_publisher" pkg = "joint_state_publisher"
+      type = "joint_state_publisher">
+    <rosparam param = "source_list">[/joint_states]</rosparam>
+  </node>
+
+  <node name = "robot_state_publisher" pkg = "robot_state_publisher"
+    type = "robot_state_publisher" />
+
+  <!-- Start up gazebo and spawn the KUKA in an empty world -->
+  <node name = "spawn_urdf" pkg = "gazebo_ros" type = "spawn_model"
+    args = "-param robot_description -urdf -model $(arg robot_name)"
+    respawn = "false" output = "screen" />
+
+  <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name = "debug" value = "true" />
+  </include> -->
+  
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" />
+
+  <!-- Load hardware interface configuration to parameter server -->
+  <rosparam command = "load"
+    file = "$(find single_lwr_robot)/config/hw_interface.yaml" />
+
+  <!-- Load hardware limits as per Kuka's LWR T1 training mode -->
+  <!-- Still TODO in controller code -->
+  <rosparam command = "load"
+    file = "$(find single_lwr_robot)/config/t1_joint_limits.yaml" />
+
+
+  <!-- Configuration of controller as per PR2 -->
+  <rosparam command = "load"
+    file = "$(find gps_agent_pkg)/launch/lwr_controller.yaml" />
+
+  <!-- <param name = "lwr/kuka_lwr_controller/root_name" value = "lwr_base_link" />
+  <param name = "lwr/kuka_lwr_controller/active_tip_name" value = "lwr_7_link" /> -->
+
+  <!-- kalman filter matrices (straight from PR2 launcher) -->
+  <param name = "lwr/kuka_lwr_controller/encoder_filter_params"
+    textfile = "$(find gps_agent_pkg)/encoder_filter_params.txt" />
+
+  <group ns="lwr">
+  	<node name = "controller_spawner" pkg = "controller_manager"
+  		type = "spawner" respawn = "false" output = "screen"
+  		args = "kuka_lwr_controller --shutdown-timeout 2" />
+  </group>
+</launch>

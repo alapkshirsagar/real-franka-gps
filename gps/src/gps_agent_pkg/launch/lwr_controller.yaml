@@ -1,0 +1,13 @@
+lwr:
+  kuka_lwr_controller:
+    type: gps_agent_pkg/KUKALWRPlugin
+    root_name: lwr_base_link
+    tip_name: lwr_7_link
+    joints: 
+      - lwr_a1_joint
+      - lwr_a2_joint
+      - lwr_e1_joint
+      - lwr_a3_joint
+      - lwr_a4_joint
+      - lwr_a5_joint
+      - lwr_a6_joint

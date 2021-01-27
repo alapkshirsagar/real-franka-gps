@@ -1,0 +1,119 @@
+position_joint_trajectory_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - panda_joint1
+    - panda_joint2
+    - panda_joint3
+    - panda_joint4
+    - panda_joint5
+    - panda_joint6
+    - panda_joint7
+  constraints:
+    goal_time: 0.5
+    panda_joint1:
+      goal: 0.05
+    panda_joint2:
+      goal: 0.05
+    panda_joint3:
+      goal: 0.05
+    panda_joint4:
+      goal: 0.05
+    panda_joint5:
+      goal: 0.05
+    panda_joint6:
+      goal: 0.05
+    panda_joint7:
+      goal: 0.05
+
+velocity_jointgroup_controller:
+  type: velocity_controllers/JointGroupVelocityController
+  joints:
+    - panda_joint1
+    - panda_joint2
+    - panda_joint3
+    - panda_joint4
+    - panda_joint5
+    - panda_joint6
+    - panda_joint7
+  constraints:
+    goal_time: 0.5
+    panda_joint1:
+      goal: 0.0005
+    panda_joint2:
+      goal: 0.0005
+    panda_joint3:
+      goal: 0.0005
+    panda_joint4:
+      goal: 0.0005
+    panda_joint5:
+      goal: 0.0005
+    panda_joint6:
+      goal: 0.0005
+    panda_joint7:
+      goal: 0.0005
+
+effort_jointgroup_controller:
+  type: effort_controllers/JointGroupEffortController
+  joints:
+    - panda_joint1
+    - panda_joint2
+    - panda_joint3
+    - panda_joint4
+    - panda_joint5
+    - panda_joint6
+    - panda_joint7
+  constraints:
+    goal_time: 0.5
+    panda_joint1:
+      goal: 0.0005
+    panda_joint2:
+      goal: 0.0005
+    panda_joint3:
+      goal: 0.0005
+    panda_joint4:
+      goal: 0.0005
+    panda_joint5:
+      goal: 0.0005
+    panda_joint6:
+      goal: 0.0005
+    panda_joint7:
+      goal: 0.0005
+
+effort_position_jointgroup_controller:
+  type: effort_controllers/JointGroupPositionController
+  joints:
+    - panda_joint1
+    - panda_joint2
+    - panda_joint3
+    - panda_joint4
+    - panda_joint5
+    - panda_joint6
+    - panda_joint7
+  panda_joint1:
+    pid: {p: 1.8, i: 0.5, d: 0.0, i_clamp_min: -0.5, i_clamp_max: 0.5, antiwindup: true}
+  panda_joint2:
+    pid: {p: 1.4, i: 1.5, d: 0.8, i_clamp_min: -0.4, i_clamp_max: 0.4, antiwindup: true}
+  panda_joint3:
+    pid: {p: 3.5, i: 2.0, d: 0.5, i_clamp_min: -1.0, i_clamp_max: 1.0, antiwindup: true}
+  panda_joint4:
+    pid: {p: 3.0, i: 2.0, d: 1.0, i_clamp_min: -1.0, i_clamp_max: 1.0, antiwindup: true}
+  panda_joint5:
+    pid: {p: 5.0, i: 2.0, d: 1.0, i_clamp_min: -1.0, i_clamp_max: 1.0, antiwindup: true}
+  panda_joint6:
+    pid: {p: 13.0, i: 6.0, d: 1.0, i_clamp_min: -1.0, i_clamp_max: 1.0, antiwindup: true}
+  panda_joint7:
+    pid: {p: 0.8, i: 0.0, d: 0.0, i_clamp_min: -0.1, i_clamp_max: 0.1, antiwindup: true}
+
+
+franka_state_controller:
+  type: franka_control/FrankaStateController
+  publish_rate: 30  # [Hz]
+  joint_names:
+    - panda_joint1
+    - panda_joint2
+    - panda_joint3
+    - panda_joint4
+    - panda_joint5
+    - panda_joint6
+    - panda_joint7
+  arm_id: panda
