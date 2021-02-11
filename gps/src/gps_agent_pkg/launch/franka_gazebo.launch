@@ -12,18 +12,20 @@
   <env name = "ROSCONSOLE_CONFIG_FILE" 
        value = "$(find gps_agent_pkg)/launch/custom_rosconsole.conf" />
 
-  <arg name = "robot_name" default = "single_franka_robot" />
+  <arg name = "robot_name" default = "panda" />
 
   <arg name="namespace" default="panda" />
   <arg name="load_gripper" default="false" />
   <!-- set hardware interface in robot description (set to VelocityJointInterface for velocity control) -->
-  <arg name="hw_interface" default="PositionJointInterface" />
+  <arg name="hw_interface" default="EffortJointInterface" />
+  <arg name="effort_position_controller" default="true" />
+
   <!-- When using the EffortJointInterface, this  arg decides, if the position or the effort controller will be started -->
   <arg name="xyz" default="0 0 0" />
   <arg name="rpy" default="0 0 0" />
   <!-- Upload robot description to ros parameter server -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm.urdf.xacro' connected_to:='world' hw_interface:='$(arg hw_interface)' xyz:='$(arg xyz)' rpy:='$(arg rpy)' namespace:='/$(arg namespace)/'" unless="$(arg load_gripper)" />
-
+    
   <!-- Set up state publishers. Don't know if this is needed for GPS -->
   <node name = "joint_state_publisher" pkg = "joint_state_publisher"
       type = "joint_state_publisher">
@@ -33,16 +35,28 @@
   <node name = "robot_state_publisher" pkg = "robot_state_publisher"
     type = "robot_state_publisher" />
 
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+     <arg name="paused" value="true"/>
+  </include>
+
   <!-- Start up gazebo and spawn the Franka in an empty world -->
   <node name = "spawn_urdf" pkg = "gazebo_ros" type = "spawn_model"
-    args = "-param robot_description -urdf -model $(arg robot_name)"
+    args = "-param robot_description -urdf -model $(arg robot_name)
+          -J panda_joint1 0.0
+          -J panda_joint2 0.0
+          -J panda_joint3 0.0
+          -J panda_joint4 0.0
+          -J panda_joint5 0.0
+          -J panda_joint6 0.0
+          -J panda_joint7 0.0
+          "
     respawn = "false" output = "screen" />
 
   <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name = "debug" value = "true" />
   </include> -->
   
-  <include file="$(find gazebo_ros)/launch/empty_world.launch" />
+
 
   <!-- Load hardware interface configuration to parameter server -->
   <rosparam command = "load"
@@ -53,6 +67,7 @@
   <!-- <rosparam command = "load"
     file = "$(find single_lwr_robot)/config/t1_joint_limits.yaml" /> -->
 
+  <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
 
   <!-- Configuration of controller as per PR2 -->
   <rosparam command = "load"
@@ -62,12 +77,12 @@
   <param name = "lwr/kuka_lwr_controller/active_tip_name" value = "lwr_7_link" /> -->
 
   <!-- kalman filter matrices (straight from PR2 launcher) -->
-  <param name = "lwr/kuka_lwr_controller/encoder_filter_params"
+  <param name = "panda/franka_controller/encoder_filter_params"
     textfile = "$(find gps_agent_pkg)/encoder_filter_params.txt" />
 
-  <group ns="lwr">
+  <group ns="panda">
   	<node name = "controller_spawner" pkg = "controller_manager"
   		type = "spawner" respawn = "false" output = "screen"
-  		args = "kuka_lwr_controller --shutdown-timeout 2" />
+  		args = "franka_controller --shutdown-timeout 2" />
   </group>
 </launch>

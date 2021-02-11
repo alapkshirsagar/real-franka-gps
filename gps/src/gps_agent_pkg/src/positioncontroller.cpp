@@ -96,6 +96,8 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
     // If we're doing any kind of control at all, compute torques now.
     if (mode_ != gps::NO_CONTROL)
     {
+        // std::cout << "Position Controller Active" << "\n";
+
         // Compute error.
         ROS_DEBUG_STREAM("Cur angs: " << current_angles_ <<
                         "Tar angs: " << target_angles_);
@@ -125,7 +127,9 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
         torques = -((pd_gains_p_.array() * temp_angles_.array()) +
                     (pd_gains_d_.array() * current_angle_velocities_.array()) +
                     (pd_gains_i_.array() * pd_integral_.array())).matrix();
-        // std::cout << "Ŧ: " << torques.transpose() << "\n";
+        // std::cout << "Current Angles: " << current_angles_.transpose() << "\n";
+        // std::cout << "Target Angles: " << target_angles_.transpose() << "\n";
+
     }
     else
     {

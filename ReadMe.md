@@ -45,7 +45,7 @@ The code base is **a work in progress**. See the [FAQ](http://rll.berkeley.edu/g
 
 `export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/path/to/gps:/path/to/gps/src/gps_agent_pkg`
 - Run Gazebo simulation and load the controller with `roslaunch gps_agent_pkg franka_gazebo.launch`
-- Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py franka_example`
+- Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py gazebo_franka_example`
 
 For more detailed instructions, see the ROS and Caffe web sites and the Franka-ROS hardware, original GPS and Jack White's GPS repositories.
 

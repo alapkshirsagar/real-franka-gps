@@ -48,7 +48,7 @@
 			<inertial>
 				<mass value="${base_mass}"/>
 				<origin xyz="0 0 0.055"  />
-				<cylinder_inertia_def radius="0.06" length="0.11" mass="${base_mass}"/>
+				<xacro:cylinder_inertia_def radius="0.06" length="0.11" mass="${base_mass}"/>
 			</inertial>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 ${M_PI}"/>

@@ -1,4 +1,4 @@
-lwr:
+panda:
   franka_controller:
     type: gps_agent_pkg/KUKALWRPlugin
     root_name: panda_link0

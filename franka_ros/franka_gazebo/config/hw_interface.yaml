@@ -1,5 +1,5 @@
 # make the namespace match the name you use to instantiate the arm in the xacro
-lwr:
+panda:
   root: panda_link0
   tip: panda_link8
   # joints is not used, since with the robot name and urdf name conventions, the parsing is hardcoded
