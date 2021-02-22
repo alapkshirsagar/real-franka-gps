@@ -81,7 +81,7 @@ for i in xrange(common['conditions']):
     reset_condition = {
         TRIAL_ARM: {
             'mode': JOINT_SPACE,
-            'data': x0[0:7],
+            'data': [0.5,0.5,0.5,0.5,0.5,0.5,0.1],
         }
     }
 

@@ -62,6 +62,6 @@
   <group ns="lwr">
   	<node name = "controller_spawner" pkg = "controller_manager"
   		type = "spawner" respawn = "false" output = "screen"
-  		args = "kuka_lwr_controller --shutdown-timeout 2" />
+  		args = "kuka_lwr_controller --shutdown-timeout 2"/>
   </group>
 </launch>

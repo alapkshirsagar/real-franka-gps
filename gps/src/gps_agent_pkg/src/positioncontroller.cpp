@@ -2,6 +2,10 @@
 #include "gps_agent_pkg/robotplugin.h"
 #include "gps_agent_pkg/util.h"
 
+#include <iostream>       // std::cout, std::endl
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
+
 using namespace gps_control;
 
 // Constructor.
@@ -127,8 +131,18 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
         torques = -((pd_gains_p_.array() * temp_angles_.array()) +
                     (pd_gains_d_.array() * current_angle_velocities_.array()) +
                     (pd_gains_i_.array() * pd_integral_.array())).matrix();
-        // std::cout << "Current Angles: " << current_angles_.transpose() << "\n";
-        // std::cout << "Target Angles: " << target_angles_.transpose() << "\n";
+        std::cout << "Current Angles: " << current_angles_.transpose() << "\n";
+        std::cout << "Target Angles: " << target_angles_.transpose() << "\n";
+        std::cout << "Torques: " << torques.transpose() << "\n";
+        std::cout << "P_gains: " << (pd_gains_p_.array()).transpose() << "\n";
+        std::cout << "Temp angles: " << (temp_angles_.array()).transpose() << "\n";
+        std::cout << "P: " << (pd_gains_p_.array() *
+                                   temp_angles_.array()).transpose() << "\n";
+        std::cout << "D: " << (pd_gains_d_.array() *
+                                   current_angle_velocities_.array()).transpose() << "\n";
+        std::cout << "I: " << (pd_gains_i_.array() *
+                                   pd_integral_.array()).transpose() << "\n";
+        // std::this_thread::sleep_for (std::chrono::seconds(1));
 
     }
     else

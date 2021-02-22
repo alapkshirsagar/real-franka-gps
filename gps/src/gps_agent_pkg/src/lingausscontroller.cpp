@@ -35,7 +35,11 @@ void LinearGaussianController::get_action(int t, const Eigen::VectorXd &X,
     //   }
 
     // Noise usually contained in k_
+    std::cout << "K_t:\n" << K_[t] << "\n";
+    std::cout << "X:\n" << X << "\n";
+    std::cout << "k_t:\n" << k_[t] << "\n";
     U = (K_[t] * X + k_[t]);
+    std::cout << "U:\n" << U << "\n";
 
     // std::cout << "Torques @ get_action: " << U.transpose() << std::endl;
 }

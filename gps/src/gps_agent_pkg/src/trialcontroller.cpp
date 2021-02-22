@@ -33,8 +33,8 @@ void TrialController::update(RobotPlugin *plugin, ros::Time current_time,
     publish_obs(obs, plugin);
     // Ask subclass to fill in torques
     get_action(step_counter_, X, obs, torques);
-    // std::cout << "Ŧ: " << torques.transpose() << "\n";
-    // std::cout << "X: " << X.transpose() << "\n";
+    std::cout << "Ŧ: " << torques.transpose() << "\n";
+    std::cout << "X: " << X.transpose() << "\n";
 
     // Set the torques for the sample
     sample->set_data(step_counter_,

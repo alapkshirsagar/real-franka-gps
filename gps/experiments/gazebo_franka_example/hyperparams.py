@@ -25,8 +25,8 @@ from gps.utility.general_utils import get_ee_points
 from gps.gui.config import generate_experiment_info
 
 
-EE_POINTS = np.array([[0.02, -0.025, 0.05], [0.02, -0.025, -0.05],
-                      [0.02, 0.05, 0.0]])
+EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
+                      [0.22, 0.05, 0.5]])
 
 SENSOR_DIMS = {
     JOINT_ANGLES: 7,
@@ -69,7 +69,7 @@ for i in xrange(common['conditions']):
     )
 
     x0 = np.zeros(32)
-    x0[:7] = [0,0,0,0,0,0,0]
+    x0[:7] = [0,0.5,0,-0.5,0, 0.5,0.5]
     x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
         get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
     )
