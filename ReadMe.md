@@ -40,12 +40,23 @@ The code base is **a work in progress**. See the [FAQ](http://rll.berkeley.edu/g
 - Build and install Caffe in accordance with the instructions on its web site, making sure to build the distribution files
 - Clone the franka_ros and kuka-lwr packages into `catkin_workspace/src` and build with `catkin_make`
 - Clone GPS into `catkin_workspace/src`
+- Install ROS packages: "convex-decomposition", "ivcon", "pr2_description", "pr2_controllers"
 - Build the GPS controllers using `cmake .` and then `make` from `catkin_workspace/src/gps/src/gps_agent_pkg`
 - Set up paths by adding the following to your ~/.bashrc file:
 
 `export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/path/to/gps:/path/to/gps/src/gps_agent_pkg`
+
+
+Gazebo Model:
 - Run Gazebo simulation and load the controller with `roslaunch gps_agent_pkg franka_gazebo.launch`
 - Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py gazebo_franka_example`
+
+Real Robot:
+- on the Franka computer, run: `roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2`
+- Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py gazebo_franka_example` 
+
+in case we havw error:
+rostopic pub /panda1/franka_control/error_recovery/goal franka_msgs/ErrorRecoveryActionGoal "header: 
 
 For more detailed instructions, see the ROS and Caffe web sites and the Franka-ROS hardware, original GPS and Jack White's GPS repositories.
 

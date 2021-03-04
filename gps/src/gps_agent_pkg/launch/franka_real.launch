@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="namespace" default="panda1" />
+  <arg name="robot_ip" default="172.16.0.2"/>
+  <arg name="load_gripper" default="true" />
+  <arg name="xyz" default="0 0 0" />
+  <arg name="rpy" default="0 0 0" />
+
+  <group ns="$(arg namespace)">
+      <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm_hand.urdf.xacro' xyz:='$(arg xyz)' rpy:='$(arg rpy)'" if="$(arg load_gripper)" />
+      <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find franka_description)/robots/panda_arm.urdf.xacro' xyz:='$(arg xyz)' rpy:='$(arg rpy)'" unless="$(arg load_gripper)" />
+
+      <include file="$(find franka_gripper)/launch/franka_gripper.launch" if="$(arg load_gripper)">
+        <arg name="robot_ip" value="$(arg robot_ip)" />
+      </include>
+
+      <node name="franka_control" pkg="franka_control" type="franka_control_node" output="screen" required="true">
+        <rosparam command="load" file="$(find franka_control)/config/franka_control_node.yaml" />
+        <param name="robot_ip" value="$(arg robot_ip)" />
+      </node>
+
+      <rosparam command = "load" file = "$(find gps_agent_pkg)/launch/franka_controller.yaml" />
+      <param name = "franka_controller/encoder_filter_params" textfile = "$(find gps_agent_pkg)/encoder_filter_params.txt" />
+
+      <rosparam command="load" file="$(find franka_control)/config/default_controllers.yaml" />
+      <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="franka_controller"/>
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+      <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
+        <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
+        <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states] </rosparam>
+        <param name="rate" value="30"/>
+      </node>
+      <node name="joint_state_desired_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
+        <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, franka_gripper/joint_states] </rosparam>
+        <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired] </rosparam>
+        <param name="rate" value="30"/>
+        <remap from="/joint_states" to="/joint_states_desired" />
+      </node>
+  </group>
+</launch>
