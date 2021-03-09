@@ -61,3 +61,12 @@ rostopic pub /panda1/franka_control/error_recovery/goal franka_msgs/ErrorRecover
 For more detailed instructions, see the ROS and Caffe web sites and the Franka-ROS hardware, original GPS and Jack White's GPS repositories.
 
 --------------------------------------------------------------------------------
+## Terminal 1
+export ROS_MASTER_URI=http://10.0.0.5:11311
+export ROS_IP=10.0.0.5
+roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2
+
+## Terminal 2
+export ROS_MASTER_URI=http://10.0.0.5:11311
+export ROS_IP=10.0.0.5
+roslaunch mocap_optitrack mocap.launch
