@@ -6,8 +6,10 @@ using namespace gps_control;
 ROSTopicSensor::ROSTopicSensor(ros::NodeHandle& n, RobotPlugin *plugin): Sensor(n, plugin)
 {
     // Initialize subscribers
-    if (!n.getParam("feat_topic",topic_name_))
-	topic_name_ = "/caffe_features_publisher";
+    //ROS_INFO("Topic name is %s", n.getParam("/feat_topic",topic_name_).c_str())
+    ROS_INFO("Topic name is %s", n.getParam("/feat_topic",topic_name_));
+    if (!n.getParam("/feat_topic",topic_name_))
+	    topic_name_ = "/caffe_features_publisher";
     // Initialize data vector.
     ROS_INFO("init rostopic sensor, topic is %s", topic_name_.c_str());
     data_size_ = 64;

@@ -70,7 +70,7 @@ for i in xrange(common['conditions']):
 
     x0 = np.zeros(32)
     # x0[:7] = [0,0.5,0,-0.5,0, 0.5,0]
-    x0[:7] = [0,0,0,0,0, 0,0]
+    x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
     x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
         get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
     )
