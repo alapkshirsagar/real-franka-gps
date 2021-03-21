@@ -197,7 +197,7 @@ KUKALWRPlugin::update(const ros::Time& time, const ros::Duration& period)
   ROS_DEBUG("  Storing torques...");
   // Store the torques
 
-  // std::cout << active_arm_torques_.transpose() << "\n";
+  std::cout << active_arm_torques_.transpose() << "\n";
   for (uint8_t i(0); i < joint_handles_.size(); i++)
     {
       joint_handles_[i].setCommand(active_arm_torques_(i));

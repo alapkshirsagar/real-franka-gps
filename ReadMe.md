@@ -75,12 +75,6 @@ export ROS_IP=10.0.0.6
 source devel/setup.bash
 rosrun gps_agent_pkg optitrack_publisher.py
 
-## GPS PC
-# Terminal 3
-export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.6
-source devel/setup.bash
-python src/real-franka-gps/gps/python/gps/gps_main.py gazebo_franka_example
 
 ## Franka PC
 ## Terminal 1
@@ -89,3 +83,9 @@ export ROS_IP=10.0.0.5
 source devel/setup.bash
 roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2
 
+## GPS PC
+# Terminal 3
+export ROS_MASTER_URI=http://10.0.0.6:11311
+export ROS_IP=10.0.0.6
+source devel/setup.bash
+python src/real-franka-gps/gps/python/gps/gps_main.py gazebo_franka_example
