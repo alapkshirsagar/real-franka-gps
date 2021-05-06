@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <launch>
+  <env name = "ROSCONSOLE_CONFIG_FILE" 
+       value = "$(find gps_agent_pkg)/launch/custom_rosconsole.conf" />
   <arg name="namespace" default="panda1" />
   <arg name="robot_ip" default="172.16.0.2"/>
-  <arg name="load_gripper" default="true" />
+  <arg name="load_gripper" default="false" />
   <arg name="xyz" default="0 0 0" />
   <arg name="rpy" default="0 0 0" />
 
@@ -28,12 +30,12 @@
       <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
         <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
         <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states] </rosparam>
-        <param name="rate" value="30"/>
+        <param name="rate" value="60"/>
       </node>
       <node name="joint_state_desired_publisher" type="joint_state_publisher" pkg="joint_state_publisher" output="screen">
         <rosparam if="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired, franka_gripper/joint_states] </rosparam>
         <rosparam unless="$(arg load_gripper)" param="source_list">[franka_state_controller/joint_states_desired] </rosparam>
-        <param name="rate" value="30"/>
+        <param name="rate" value="60"/>
         <remap from="/joint_states" to="/joint_states_desired" />
       </node>
   </group>

@@ -79,7 +79,10 @@ rosrun gps_agent_pkg optitrack_publisher.py
 ## Franka PC
 ## Terminal 1
 export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.5
+export ROS_IP=10.0.0.2
+
+export ROS_MASTER_URI=http://132.72.103.146:11311
+export ROS_IP=132.72.103.150
 source devel/setup.bash
 roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2
 
@@ -89,3 +92,6 @@ export ROS_MASTER_URI=http://10.0.0.6:11311
 export ROS_IP=10.0.0.6
 source devel/setup.bash
 python src/real-franka-gps/gps/python/gps/gps_main.py gazebo_franka_example
+
+
+cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/franka2/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/franka2/caffe/build/lib

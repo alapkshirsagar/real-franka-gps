@@ -70,7 +70,7 @@ void RobotPlugin::initialize_ros(ros::NodeHandle& n)
                                   &RobotPlugin::relax_subscriber_callback, this);
   data_request_subscriber_ = n.subscribe("/gps_controller_data_request", 1,
                                          &RobotPlugin::data_request_subscriber_callback, this);
-
+  
   // Create publishers.
   report_publisher_.reset(new
                           realtime_tools::RealtimePublisher<gps_agent_pkg::SampleResult>(n,

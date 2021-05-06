@@ -24,6 +24,7 @@ void NeuralNetwork::set_scalebias(const Eigen::MatrixXd& scale, const Eigen::Vec
     // Preallocate temporaries
     input_scaled_.resize(dim_bias);
     ROS_INFO("Scale and bias set successfully");
+    std::cout<<"Input scaled initial \n" << input_scaled_ << std::endl;
 }
 
 void NeuralNetwork::set_weights(void *weights_ptr)

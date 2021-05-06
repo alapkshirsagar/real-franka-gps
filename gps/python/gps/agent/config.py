@@ -44,14 +44,14 @@ try:
         'end_effector_points': np.array([]),
         #TODO: Actually pass in low gains and high gains and use both
         #      for the position controller.
-        'pid_params': np.array([
-            24.0, 5.0, 18.0, 4.0,
-            12.0, 5.0, 20.0, 4.0,
-            10.0, 5.0, 6.0, 4.0,
-            7.0, 5.0, 4.0, 4.0,
-            3.0, 5.0, 6.0, 2.0,
-            3.0, 5.0, 4.0, 2.0,
-            3.0, 5.0, 2.0, 2.0
+        'pid_params': 7.0*np.array([
+            0.6, 0.3, 0.3, 0.1,
+            0.6, 0.3, 0.3, 0.1,
+            0.6, 0.3, 0.3, 0.1,
+            0.6, 0.3, 0.3, 0.1,
+            0.25, 0.1, 0.1, 0.1,
+            0.25, 0.1, 0.1, 0.1,
+            0.25, 0.1, 0.1, 0.1
         ]),
     }
 except ImportError as e:

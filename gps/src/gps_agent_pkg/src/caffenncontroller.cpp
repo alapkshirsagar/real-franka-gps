@@ -36,7 +36,7 @@ void CaffeNNController::configure_controller(OptionsMap &options)
 
     NetParameter net_param;
     net_param.ParseFromString(net_param_string);
-
+    
     // This sets the network and the weights
     net_.reset(new NeuralNetworkCaffe(net_param));
 

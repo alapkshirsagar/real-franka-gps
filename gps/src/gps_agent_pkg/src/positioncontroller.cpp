@@ -62,12 +62,15 @@ PositionController::~PositionController()
 // Update the controller (take an action).
 void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boost::scoped_ptr<Sample>& sample, Eigen::VectorXd &torques)
 {
+    //ROS_INFO_STREAM("1");
     // Get current joint angles.
     plugin->get_joint_encoder_readings(temp_angles_, arm_);
 
     // Check dimensionality.
     assert(temp_angles_.rows() == torques.rows());
     assert(temp_angles_.rows() == current_angles_.rows());
+  
+    //ROS_INFO_STREAM("2");
 
     // Estimate joint angle velocities.
     double update_time = current_time.toSec() - last_update_time_.toSec();
@@ -75,12 +78,16 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
     { // Only compute velocities if we have a previous sample.
         current_angle_velocities_ = (temp_angles_ - current_angles_)/update_time;
     }
+    
+    //ROS_INFO_STREAM("3");
 
     // Store new angles.
     current_angles_ = temp_angles_;
 
     // Update last update time.
     last_update_time_ = current_time;
+    
+    //ROS_INFO_STREAM("4");
 
     // If doing task space control, compute joint positions target.
     if (mode_ == gps::TASK_SPACE)
@@ -97,18 +104,23 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
         target_angles_ = current_angles_ + temp_jacobian_.transpose() * (target_pose_ - current_pose_);
     }
 
+    //ROS_INFO_STREAM("5");
+
+
     // If we're doing any kind of control at all, compute torques now.
     if (mode_ != gps::NO_CONTROL)
     {
-        // std::cout << "Position Controller Active" << "\n";
+        //std::cout << "Position Controller Active" << "\n";
 
         // Compute error.
-        ROS_DEBUG_STREAM("Cur angs: " << current_angles_ <<
-                        "Tar angs: " << target_angles_);
+        //ROS_INFO_STREAM("Cur angs: " << current_angles_ <<
+        //               "Tar angs: " << target_angles_);
         temp_angles_ = current_angles_ - target_angles_;
 
         // Add to integral term.
         pd_integral_ += temp_angles_ * update_time;
+
+        //std::cout << "Position Controller Active 2" << "\n";
 
         // Clamp integral term
         for (int i = 0; i < temp_angles_.rows(); i++){
@@ -119,20 +131,22 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
                 pd_integral_(i) = -i_clamp_(i) / pd_gains_i_(i);
             }
         }
+    
+    //ROS_INFO_STREAM("6");
 
         // Compute torques.
-        ROS_DEBUG_STREAM("P: " << (pd_gains_p_.array() *
-                                   temp_angles_.array()).transpose());
-        ROS_DEBUG_STREAM("D: " << (pd_gains_d_.array() *
-                                   current_angle_velocities_.array()).transpose());
-        ROS_DEBUG_STREAM("I: " << (pd_gains_i_.array() *
-                                   pd_integral_.array()).transpose());
+        // ROS_DEBUG_STREAM("P: " << (pd_gains_p_.array() *
+        //                            temp_angles_.array()).transpose());
+        // ROS_DEBUG_STREAM("D: " << (pd_gains_d_.array() *
+        //                            current_angle_velocities_.array()).transpose());
+        // ROS_DEBUG_STREAM("I: " << (pd_gains_i_.array() *
+        //                            pd_integral_.array()).transpose());
 
         torques = -((pd_gains_p_.array() * temp_angles_.array()) +
                     (pd_gains_d_.array() * current_angle_velocities_.array()) +
                     (pd_gains_i_.array() * pd_integral_.array())).matrix();
-        std::cout << "Current Angles: " << current_angles_.transpose() << "\n";
-        std::cout << "Target Angles: " << target_angles_.transpose() << "\n";
+        //std::cout << "Current Angles: " << current_angles_.transpose() << "\n";
+        //std::cout << "Target Angles: " << target_angles_.transpose() << "\n";
         // std::cout << "Torques: " << torques.transpose() << "\n";
         // std::cout << "P_gains: " << (pd_gains_p_.array()).transpose() << "\n";
         // std::cout << "Temp angles: " << (temp_angles_.array()).transpose() << "\n";
@@ -148,6 +162,7 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
     else
     {
         torques = Eigen::VectorXd::Zero(torques.rows());
+        //ROS_INFO_STREAM("7");
     }
 
 }
