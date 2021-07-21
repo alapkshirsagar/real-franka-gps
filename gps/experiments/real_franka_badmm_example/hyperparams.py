@@ -63,7 +63,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 1,
+    'conditions': 3,
 }
 
 # TODO(chelsea/zoe) : Move this code to a utility function
@@ -108,6 +108,7 @@ agent = {
     'dt': 0.05,
     'conditions': common['conditions'],
     'T': 100,
+    'target_end_effector': 'human_hand',
     'x0': x0s,
     'ee_points_tgt': ee_tgts,
     'reset_conditions': reset_conditions,
@@ -146,7 +147,7 @@ algorithm['init_traj_distr'] = {
     'init_gains':  1.0 / PR2_GAINS,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
     # 'init_var': 1.0,
-    'init_var': 1.0, # Kinda
+    'init_var': 0.25,#1.0, # Kinda
     'stiffness': 3,
     'stiffness_vel': 0.25,
     'final_weight': 50,
@@ -159,12 +160,24 @@ torque_cost = {
     'wu': 5e-3 / PR2_GAINS,
 }
 
+
+fk_cost = {
+    'type': CostFK,
+    'target_end_effector': 'human_hand',#np.array([0.0, 0.3, -0.5, 0.0, 0.3, -0.2]),
+    'wp': np.array([1, 1, 1]),
+    'l1': 2.0,
+    'l2': 2.0,
+    'alpha': 1e-5,
+}
+
 fk_cost1 = {
     'type': CostFK,
     # Target end effector is subtracted out of EE_POINTS in ROS so goal
     # is 0.
-    'target_end_effector': np.zeros(3 * EE_POINTS.shape[0]),
-    'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    #'target_end_effector': np.zeros(3 * EE_POINTS.shape[0]),
+    'target_end_effector':'human_hand',
+    #'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    'wp': np.array([1, 1, 1]),
     'l1': 0.1,
     'l2': 0.0001,
     # 'l1': 0, # Ville
@@ -174,8 +187,10 @@ fk_cost1 = {
 
 fk_cost2 = {
     'type': CostFK,
-    'target_end_effector': np.zeros(3 * EE_POINTS.shape[0]),
-    'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    #'target_end_effector': np.zeros(3 * EE_POINTS.shape[0]),
+    'target_end_effector':'human_hand',
+    #'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    'wp': np.array([1, 1, 1]),
     'l1': 1.0,
     'l2': 0.0,
     # 'l1': 0, # Ville
@@ -186,8 +201,10 @@ fk_cost2 = {
 
 algorithm['cost'] = {
     'type': CostSum,
-    'costs': [fk_cost1, fk_cost2],
-    'weights': [1.0, 1.0],
+    #'costs': [fk_cost1, fk_cost2],
+    #'weights': [1.0, 1.0],
+    'costs': [fk_cost],
+    'weights': [1.0],
 }
 
 algorithm['dynamics'] = {
@@ -222,7 +239,7 @@ algorithm['policy_prior'] = {
 config = {
     'iterations': algorithm['iterations'],
     'common': common,
-    'verbose_trials': 0,
+    'verbose_trials': 1,
     'verbose_policy_trials': 1,
     'agent': agent,
     'gui_on': True,

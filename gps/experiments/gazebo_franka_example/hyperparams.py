@@ -120,8 +120,8 @@ algorithm['init_traj_distr'] = {
     'init_gains':  1.0 / PR2_GAINS,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
     # 'init_var': 1.0,
-    'init_var': 30, # Kinda
-    'stiffness': 60,
+    'init_var': 1, # Kinda
+    'stiffness': 3,
     'stiffness_vel': 0.25,
     'final_weight': 50,
     'dt': agent['dt'],
@@ -160,8 +160,8 @@ fk_cost2 = {
 
 algorithm['cost'] = {
     'type': CostSum,
-    'costs': [torque_cost, fk_cost1, fk_cost2],
-    'weights': [1.0, 1.0, 1.0],
+    'costs': [fk_cost1, fk_cost2],
+    'weights': [1.0, 1.0],
 }
 
 algorithm['dynamics'] = {

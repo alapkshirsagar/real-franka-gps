@@ -63,35 +63,45 @@ For more detailed instructions, see the ROS and Caffe web sites and the Franka-R
 --------------------------------------------------------------------------------
 ## GPS PC
 # Terminal 1
-export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.6
+export ROS_MASTER_URI=http://132.72.96.38:11311
+export ROS_IP=132.72.96.38
 source devel/setup.bash
 roslaunch mocap_optitrack mocap.launch
 
 ## GPS PC
 # Terminal 2
-export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.6
+export ROS_MASTER_URI=http://132.72.96.38:11311
+export ROS_IP=132.72.96.38
 source devel/setup.bash
 rosrun gps_agent_pkg optitrack_publisher.py
 
 
 ## Franka PC
 ## Terminal 1
-export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.2
-
-export ROS_MASTER_URI=http://132.72.103.146:11311
-export ROS_IP=132.72.103.150
+export ROS_MASTER_URI=http://132.72.96.38:11311
+export ROS_IP=132.72.96.57
 source devel/setup.bash
 roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2
 
 ## GPS PC
 # Terminal 3
-export ROS_MASTER_URI=http://10.0.0.6:11311
-export ROS_IP=10.0.0.6
+export ROS_MASTER_URI=http://132.72.96.38:11311
+export ROS_IP=132.72.96.38
 source devel/setup.bash
-python src/real-franka-gps/gps/python/gps/gps_main.py gazebo_franka_example
+python src/real-franka-gps/gps/python/gps/gps_main.py real_franka_badmm_example
+
+python src/real-franka-gps/gps/python/gps/gps_main.py real_franka_badmm_example
 
 
-cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/franka2/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/franka2/caffe/build/lib
+export ROS_MASTER_URI=http://132.72.96.38:11311
+export ROS_IP=132.72.96.38
+source devel/setup.bash
+cd src/real-franka-gps/gps/
+python python/gps/gps_main.py real_franka_badmm_sim2real -p 1 10
+
+
+MuJoCo to RealRobot - to change in hyperparams: 1. agent type 2. conditions 3. init_var 4. stiffness 5. stiffness_vel
+                                in cost_fk    : 1. jx_full 
+
+
+source ../../../../../devel/setup.bash

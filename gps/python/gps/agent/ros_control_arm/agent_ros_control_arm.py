@@ -4,7 +4,7 @@ import time
 import numpy as np # Following convention of agent_ros
 
 import rospy
-
+import tf
 from gps.agent.agent import Agent
 from gps.agent.agent_utils import generate_noise, setup
 from gps.agent.config import AGENT_ROS
@@ -41,6 +41,7 @@ class AgentROSControlArm(Agent):
         """
         config = copy.deepcopy(AGENT_ROS)
 
+
         config['pid_params'] = 7.0*np.array([ \
             0.6, 0.3, 0.3, 0.1, \
             0.6, 0.3, 0.3, 0.1, \
@@ -60,13 +61,38 @@ class AgentROSControlArm(Agent):
         conditions = self._hyperparams['conditions'] # Target pose
 
         self.x0 = []
+        self.tf_listener = tf.TransformListener()
+        pose_available = False
+        r = rospy.Rate(20) # 100hz
+
+        while not pose_available:
+            try:
+                (trans_robot, rot_robot) = self.tf_listener.lookupTransform("optitrack_origin", "kinova_gripper", rospy.Time(0))
+                # (trans_object, rot_object) = self.tf_listener.lookupTransform(self.config.optitrack_tf_origin, self.config.optitrack_tf_object, rospy.Time(0))
+                (trans_human, rot_human) = self.tf_listener.lookupTransform("optitrack_origin", "human_hand", rospy.Time(0))
+                # print("Human position =", trans_human)
+                # print("Robot position =", trans_robot)
+                pose_available = True
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                print 'Could not find transform'
+            r.sleep()
+
+        eepts_notgt = np.concatenate([trans_human, trans_human, trans_robot])
+        # if self._hyperparams['target_end_effector'] == 'human_hand':
+        #     for field in ['x0']:
+        #         self._hyperparams[field] = setup(self._hyperparams[field], \
+        #                                         conditions)
+        # else:
         for field in ('x0', 'ee_points_tgt', 'reset_conditions'):
             self._hyperparams[field] = setup(self._hyperparams[field], \
-                                             conditions)
-        self.x0 = self._hyperparams['x0']
-
-        r = rospy.Rate(1)
-        r.sleep()
+                                            conditions)
+        if len(self._hyperparams['x0'][0]) != 32:
+            # import pdb; pdb.set_trace()
+            self.x0.append(
+                        np.concatenate([self._hyperparams['x0'][0], eepts_notgt, np.zeros_like(eepts_notgt)])
+                    )
+        else:
+            self.x0 = self._hyperparams['x0']
 
         self.use_tf = False
         self.observations_stale = True
@@ -154,6 +180,7 @@ class AgentROSControlArm(Agent):
         timeout = self._hyperparams['trial_timeout']
         reset_command.id = self._get_next_seq_id()
         self._reset_service.publish_and_wait(reset_command)
+        rospy.sleep(5.0)
 
     def reset(self, condition):
         """
@@ -166,7 +193,7 @@ class AgentROSControlArm(Agent):
                        condition_data[TRIAL_ARM]['data'])
         time.sleep(2.0) # Allows a physical robot to come to a full stop.
 
-    def sample(self, policy, condition, verbose=True, save=True, noisy=True):
+    def sample(self, policy, condition, iteration, verbose=True, save=True, noisy=True):
         """
         Reset and execute a policy and collect a (compound) sample.
         Args:

@@ -13,7 +13,6 @@ import argparse
 import threading
 import time
 import traceback
-import pdb
 
 # Add gps/python to path so that imports work.
 sys.path.append('/'.join(str.split(__file__, '/')[:-2]))
@@ -77,7 +76,7 @@ class GPSMain(object):
                 self.agent.clear_samples()
 
                 self._take_iteration(itr, traj_sample_lists)
-                pol_sample_lists = self._take_policy_samples()
+                pol_sample_lists = self._take_policy_samples(itr, None)
                 self._log_data(itr, traj_sample_lists, pol_sample_lists)
         except Exception as e:
             traceback.print_exception(*sys.exc_info())
@@ -102,7 +101,7 @@ class GPSMain(object):
         traj_sample_lists = self.data_logger.unpickle(self._data_files_dir +
             ('traj_sample_itr_%02d.pkl' % itr))
 
-        pol_sample_lists = self._take_policy_samples(N)
+        pol_sample_lists = self._take_policy_samples(itr,N)
         self.data_logger.pickle(
             self._data_files_dir + ('pol_sample_itr_%02d.pkl' % itr),
             copy.copy(pol_sample_lists)
@@ -185,7 +184,7 @@ class GPSMain(object):
                     (itr, cond, i)
                 )
                 self.agent.sample(
-                    pol, cond,
+                    pol, cond, itr,
                     verbose=(i < self._hyperparams['verbose_trials'])
                 )
 
@@ -197,7 +196,7 @@ class GPSMain(object):
                     redo = False
         else:
             self.agent.sample(
-                pol, cond,
+                pol, cond, itr,
                 verbose=(i < self._hyperparams['verbose_trials'])
             )
 
@@ -215,11 +214,12 @@ class GPSMain(object):
         if self.gui:
             self.gui.stop_display_calculating()
 
-    def _take_policy_samples(self, N=None):
+    def _take_policy_samples(self, itr, N=None):
         """
         Take samples from the policy to see how it's doing.
         Args:
             N  : number of policy samples to take per condition
+            itr : iteration number
         Returns: None
         """
         if 'verbose_policy_trials' not in self._hyperparams:
@@ -234,7 +234,7 @@ class GPSMain(object):
         # TODO: Take at all conditions for GUI?
         for cond in range(len(self._test_idx)):
             pol_samples[cond][0] = self.agent.sample(
-                self.algorithm.policy_opt.policy, self._test_idx[cond],
+                self.algorithm.policy_opt.policy, self._test_idx[cond], itr,
                 verbose=verbose, save=False, noisy=False)
         return [SampleList(samples) for samples in pol_samples]
 
@@ -290,8 +290,8 @@ def main():
                         help='run target setup')
     parser.add_argument('-r', '--resume', metavar='N', type=int,
                         help='resume training from iter N')
-    parser.add_argument('-p', '--policy', metavar='N', type=int,
-                        help='take N policy samples (for BADMM/MDGPS only)')
+    parser.add_argument('-p', '--policy', nargs =2, metavar=('N', 'itr'), type=int,
+                        help='take N policy samples from iteration itr (for BADMM/MDGPS only)')
     parser.add_argument('-s', '--silent', action='store_true',
                         help='silent debug print outs')
     parser.add_argument('-q', '--quit', action='store_true',
@@ -300,7 +300,11 @@ def main():
 
     exp_name = args.experiment
     resume_training_itr = args.resume
-    test_policy_N = args.policy
+    if args.policy is None:
+        test_policy_N = None
+    else:
+        test_policy_N = args.policy[0]
+        test_policy_itr = args.policy[1]
 
     from gps import __file__ as gps_filepath
     gps_filepath = os.path.abspath(gps_filepath)
@@ -379,7 +383,7 @@ def main():
         gps = GPSMain(hyperparams.config)
         if hyperparams.config['gui_on']:
             test_policy = threading.Thread(
-                target=lambda: gps.test_policy(itr=current_itr, N=test_policy_N)
+                target=lambda: gps.test_policy(itr=test_policy_itr, N=test_policy_N)
             )
             test_policy.daemon = True
             test_policy.start()
@@ -387,7 +391,7 @@ def main():
             plt.ioff()
             plt.show()
         else:
-            gps.test_policy(itr=current_itr, N=test_policy_N)
+            gps.test_policy(itr=test_policy_itr, N=test_policy_N)
     else:
         import random
         import numpy as np

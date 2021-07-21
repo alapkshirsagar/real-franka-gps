@@ -1,5 +1,5 @@
 <mujocoinclude>
-	<compiler  angle="radian" meshdir="meshes/" settotalmass="18.5"/>
+	<compiler  angle="radian" meshdir="meshes/" settotalmass="18.5" />  
 
     <asset>
         <mesh name="link0_col" file="collision/link0.stl"/>

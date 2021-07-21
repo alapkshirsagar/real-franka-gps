@@ -49,12 +49,37 @@ class CostFK(Cost):
 
         # Choose target.
         tgt = self._hyperparams['target_end_effector']
+        # if tgt == 'human_hand':
         pt = sample.get(END_EFFECTOR_POINTS)
-        dist = pt - tgt
+        #print("Points = ", pt)
+        # print("Targets =", tgt)
+        dist = pt[:,6:9] - pt[:,0:3]
+        # print("Distance", dist)
+        jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
+        #jx_full = np.zeros((T, 3*9, dX)) #for the real robot
+        jx = jx_full[:, 6:9, -sample.get(JOINT_ANGLES).shape[1]:]
+        #print(jx_full.shape)
+        #print("jx", jx.shape)
+        # print("Points = ",pt[:, 6:9])
+        # print("JOINT_ANGLES",sample.get(JOINT_ANGLES))
+        # thetas = sample.get(JOINT_ANGLES)
+        # for t in range(0,T-1):
+        #     for joint in range(0,7):
+        #         for coordinate in range(0,3):
+        #             #jx[t,coordinate,joint] = ((pt[t,coordinate]-pt[t-1,coordinate])/(thetas[t,joint]-thetas[t-1, joint]))
+        #             jx[t,coordinate,joint] = ((pt[t+1,coordinate]-pt[t,coordinate])/(thetas[t+1,joint]-thetas[t, joint]))
+        #             # print("jx",jx[t,coordinate,joint])
+        #             # print(pt[t+1,coordinate])
+        #             # print(pt[t,coordinate])
+        #             # print(thetas[t+1,joint])
+        #             # print(thetas[t,joint])
+        # # print("jx",jx )
+
+
+        
         # TODO - These should be partially zeros so we're not double
         #        counting.
         #        (see pts_jacobian_only in matlab costinfos code)
-        jx = sample.get(END_EFFECTOR_POINT_JACOBIANS)
 
         # Evaluate penalty term. Use estimated Jacobians and no higher
         # order terms.

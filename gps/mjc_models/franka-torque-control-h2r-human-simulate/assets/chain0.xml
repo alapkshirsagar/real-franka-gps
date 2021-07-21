@@ -35,19 +35,19 @@
 																		<!-- <site name="gripper_bottom" pos="-0.15 0 0.2"  size="0.01" />
 																		<site name="gripper_top" pos="0.15 0 0.2"  size="0.01" /> -->
                                                                         <!-- <site name="gripper_back" pos="0 0 0.15"  size="0.01" /> -->
-                                                                        <site name="gripper_back" pos="0.0 0.0 0.0"  size="0.01" />
-																		<body name="panda0_leftfinger" pos="0 0 0.1654" >
-																				<joint name="panda0_finger_joint1"  axis="0 1 0" type="slide" range="0 0.04" class="panda_finger"/>
+                                    <site name="gripper_back" pos="0.0 0.0 0.0"  size="0.01" />
+                                    <body name="panda0_leftfinger" pos="0 0 0.1654" >
+                                        <!-- <joint name="panda0_finger_joint1"  axis="0 1 0" type="slide" range="0 0.04" class="panda_finger"/> -->
                                         <geom class="panda_viz" mesh="finger_viz"/>
                                         <geom class="panda_col" mesh="finger_col"/>
-																				<!-- <geom name="gripper_left_flat" pos="0 0 0.05" rgba="0 0.6 1 1" type="box" size="0.075 0.005 0.05" mass="0.01" density="1000" contype="1" conaffinity="1" solref=".02 0.5" solimp=".9 .9 .1" friction="1 1 1" /> -->
+                                        <!-- <geom name="gripper_left_flat" pos="0 0 0.05" rgba="0 0.6 1 1" type="box" size="0.075 0.005 0.05" mass="0.01" density="1000" contype="1" conaffinity="1" solref=".02 0.5" solimp=".9 .9 .1" friction="1 1 1" /> -->
                                     </body>
                                     <body name="panda0_rightfinger" pos="0 0 0.1654" >
-                                        <joint name="panda0_finger_joint2" axis="0 -1 0" type="slide" range="0 0.04" class="panda_finger"/>
+                                        <!-- <joint name="panda0_finger_joint2" axis="0 -1 0" type="slide" range="0 0.04" class="panda_finger"/> -->
                                         <geom quat="0 0 0 1" class="panda_viz" mesh="finger_viz"/>
                                         <geom quat="0 0 0 1" class="panda_col" mesh="finger_col"/>
-																				<!-- <geom name="gripper_right_flat" pos="0 0 0.05" rgba="0 0.6 1 1" type="box" size="0.075 0.005 0.05" mass="0.01" density="1000" contype="1" conaffinity="1" solref=".02 0.5" solimp=".9 .9 .1" friction="1 1 1" /> -->
-																		</body>
+                                        <!-- <geom name="gripper_right_flat" pos="0 0 0.05" rgba="0 0.6 1 1" type="box" size="0.075 0.005 0.05" mass="0.01" density="1000" contype="1" conaffinity="1" solref=".02 0.5" solimp=".9 .9 .1" friction="1 1 1" /> -->
+                                    </body>
                                 </body>
                             </body>
                         </body>
