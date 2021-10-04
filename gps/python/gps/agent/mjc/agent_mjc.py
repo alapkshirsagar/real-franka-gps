@@ -87,7 +87,7 @@ class AgentMuJoCo(Agent):
         if self._hyperparams['reduced'] == "FullState":
             self._joint_idx = list(range(self._model[0]['nq']))
             self._vel_idx = [i + self._model[0]['nq'] for i in range(self._model[0]['nv'])]
-        elif self._hyperparams['reduced'] == "Only7Joints":
+        elif self._hyperparams['reduced'] == "Only7Joints" or self._hyperparams['reduced'] == "Only7JointsRelativeEEF" :
             self._joint_idx = list(range(4,11))
             self._vel_idx = [i + self._model[0]['nq'] for i in range(4,11)]
         else:
@@ -102,11 +102,15 @@ class AgentMuJoCo(Agent):
             if END_EFFECTOR_POINTS in self.x_data_types:
                 # TODO: this assumes END_EFFECTOR_VELOCITIES is also in datapoints right?
                 self._init(i)
-                if self._hyperparams['reduced'] == "RelativeEEF":
+                if self._hyperparams['reduced'] == "RelativeEEF" or self._hyperparams['reduced'] == "Only7JointsRelativeEEF":
+                    if self._hyperparams['reduced'] == "RelativeEEF":
+                        sites = 9
+                    else:
+                        sites = 3
                     eepts = self._world[i].get_data()['site_xpos'].flatten()
-                    eepts_rel = eepts[0:18]
-                    for site in range(0,6):
-                        eepts_rel[3*site:3*site+3] = eepts[3*site:3*site+3] - eepts[18:21]
+                    eepts_rel = eepts[0:2*sites]
+                    for site in range(0,sites-sites/3):
+                        eepts_rel[3*site:3*site+3] = eepts[3*site:3*site+3] - eepts[2*sites:2*sites+3]
                     # print("End effector points:", eepts)
                     if END_EFFECTOR_POINT_VELOCITIES in self.x_data_types:
                         self.x0.append(
@@ -122,7 +126,7 @@ class AgentMuJoCo(Agent):
                         self.x0.append(
                             np.concatenate([self._hyperparams['x0'][i], np.tile(eepts, self._hyperparams['pre_timesteps']), np.zeros_like(np.tile(eepts,self._hyperparams['pre_timesteps']))])
                         )
-                        # print("Reached here, reached here", self.x0)
+                        print("Reached here, reached here", self.x0)
                         # print("EEPTS=", np.tile(eepts,self._hyperparams['pre_timesteps']) )
                     else:
                         self.x0.append(
@@ -345,6 +349,21 @@ class AgentMuJoCo(Agent):
                 idx = site * 3
                 jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)
             sample.set(END_EFFECTOR_POINT_JACOBIANS, np.tile(jac, self._hyperparams['pre_timesteps']), t=0)
+        elif self._hyperparams['reduced'] == 'Only7JointsRelativeEEF':
+            sample.set(JOINT_ANGLES, data['qpos'][4:11].flatten(), t=0)
+            sample.set(JOINT_VELOCITIES, data['qvel'][4:11].flatten(), t=0)
+            eepts = data['site_xpos'].flatten()
+            eepts_rel = eepts[0:6]
+            for site in range(0,2):
+                eepts_rel[3*site:3*site+3] = eepts[3*site:3*site+3] - eepts[6:9]
+            sample.set(END_EFFECTOR_POINTS, np.tile(eepts_rel, self._hyperparams['pre_timesteps']), t=0)
+            if END_EFFECTOR_POINT_VELOCITIES in self.x_data_types:
+                sample.set(END_EFFECTOR_POINT_VELOCITIES, np.zeros_like(np.tile(eepts_rel,self._hyperparams['pre_timesteps'])), t=0)
+            jac = np.zeros([eepts_rel.shape[0], self._model[condition]['nv']])
+            for site in range(0,2):
+                idx = site * 3
+                jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(6)
+            sample.set(END_EFFECTOR_POINT_JACOBIANS, np.tile(jac, self._hyperparams['pre_timesteps']), t=0)
         elif self._hyperparams['reduced'] == "RelativeEEF":
             sample.set(JOINT_ANGLES, data['qpos'][4:].flatten(), t=0)
             sample.set(JOINT_VELOCITIES, data['qvel'][4:].flatten(), t=0)
@@ -423,18 +442,22 @@ class AgentMuJoCo(Agent):
         sample.set(JOINT_ANGLES, np.array(mj_X[self._joint_idx]), t=t+1)
         sample.set(JOINT_VELOCITIES, np.array(mj_X[self._vel_idx]), t=t+1)
 
-        if self._hyperparams['reduced'] == "RelativeEEF":
+        if self._hyperparams['reduced'] == "RelativeEEF" or self._hyperparams['reduced'] == "Only7JointsRelativeEEF":
+            if self._hyperparams['reduced'] == "RelativeEEF":
+                sites = 9
+            else:
+                sites = 3
             cur_eepts = self._data['site_xpos'].flatten()
-            cur_eepts_rel = cur_eepts[0:18]
-            for site in range(0,6):
-                cur_eepts_rel[3*site:3*site+3] = cur_eepts[3*site:3*site+3] - cur_eepts[18:21]
+            cur_eepts_rel = cur_eepts[0:sites*2]
+            for site in range(0,sites-sites/3):
+                cur_eepts_rel[3*site:3*site+3] = cur_eepts[3*site:3*site+3] - cur_eepts[2*sites:2*sites+3]
             sample.set(END_EFFECTOR_POINTS, cur_eepts_rel, t=t+1)
             prev_eepts = sample.get(END_EFFECTOR_POINTS, t=t)
             eept_vels = (cur_eepts_rel - prev_eepts) / self._hyperparams['dt']
             if END_EFFECTOR_POINT_VELOCITIES in self.x_data_types:
                 sample.set(END_EFFECTOR_POINT_VELOCITIES, eept_vels, t=t+1)
             jac = np.zeros([cur_eepts_rel.shape[0], self._model[condition]['nv']])
-            for site in range(0,6):
+            for site in range(0,sites-sites/3):
                 idx = site * 3
                 jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(6)
             sample.set(END_EFFECTOR_POINT_JACOBIANS, jac, t=t+1)

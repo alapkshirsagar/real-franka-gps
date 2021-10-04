@@ -12,9 +12,9 @@
   <env name = "ROSCONSOLE_CONFIG_FILE" 
        value = "$(find gps_agent_pkg)/launch/custom_rosconsole.conf" />
 
-  <arg name = "robot_name" default = "panda" />
+  <arg name = "robot_name" default = "panda1" />
 
-  <arg name="namespace" default="panda" />
+  <arg name="namespace" default="panda1" />
   <arg name="load_gripper" default="false" />
   <!-- set hardware interface in robot description (set to VelocityJointInterface for velocity control) -->
   <arg name="hw_interface" default="EffortJointInterface" />

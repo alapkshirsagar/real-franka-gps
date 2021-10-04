@@ -53,10 +53,10 @@ Gazebo Model:
 
 Real Robot:
 - on the Franka computer, run: `roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2`
-- Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py gazebo_franka_example` 
+- Run the GPS backend and start the example experiment from `catkin_workspace/src/gps` using `python python/gps/gps_main.py gazebo_franka_example`
 
-in case we havw error:
-rostopic pub /panda1/franka_control/error_recovery/goal franka_msgs/ErrorRecoveryActionGoal "header: 
+in case we have error:
+rostopic pub /panda1/franka_control/error_recovery/goal franka_msgs/ErrorRecoveryActionGoal "header:
 
 For more detailed instructions, see the ROS and Caffe web sites and the Franka-ROS hardware, original GPS and Jack White's GPS repositories.
 
@@ -101,7 +101,7 @@ python python/gps/gps_main.py real_franka_badmm_sim2real -p 1 10
 
 
 MuJoCo to RealRobot - to change in hyperparams: 1. agent type 2. conditions 3. init_var 4. stiffness 5. stiffness_vel
-                                in cost_fk    : 1. jx_full 
+                                in cost_fk    : 1. jx_full
 
 
 source ../../../../../devel/setup.bash

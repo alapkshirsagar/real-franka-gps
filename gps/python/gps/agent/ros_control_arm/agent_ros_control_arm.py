@@ -50,7 +50,7 @@ class AgentROSControlArm(Agent):
             0.25, 0.1, 0.1, 0.1, \
             0.25, 0.1, 0.1, 0.1, \
             0.25, 0.1, 0.1, 0.1])
-        
+
         config.update(hyperparams)
         Agent.__init__(self, config)
         if init_node:

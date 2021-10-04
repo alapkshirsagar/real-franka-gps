@@ -53,11 +53,14 @@ class CostFK(Cost):
         pt = sample.get(END_EFFECTOR_POINTS)
         #print("Points = ", pt)
         # print("Targets =", tgt)
-        dist = pt[:,6:9] - pt[:,0:3]
-        # print("Distance", dist)
-        jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
-        #jx_full = np.zeros((T, 3*9, dX)) #for the real robot
-        jx = jx_full[:, 6:9, -sample.get(JOINT_ANGLES).shape[1]:]
+        if pt.shape[1] == 6:
+            dist = pt[:,0:3]
+            jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
+            jx = jx_full[:, 0:3, -sample.get(JOINT_ANGLES).shape[1]:]
+        else:
+            dist = pt[:,6:9] - pt[:,0:3]
+            jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
+            jx = jx_full[:, 6:9, -sample.get(JOINT_ANGLES).shape[1]:]
         #print(jx_full.shape)
         #print("jx", jx.shape)
         # print("Points = ",pt[:, 6:9])

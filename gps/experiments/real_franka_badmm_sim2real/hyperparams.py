@@ -33,8 +33,9 @@ from gps.gui.target_setup_gui import load_pose_from_npz
 from gps.utility.general_utils import get_ee_points
 
 ALGORITHM_NN_LIBRARY = "caffe"
-EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
-                      [0.22, 0.05, 0.5]])
+# EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
+#                       [0.22, 0.05, 0.5]])
+EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55]])
 
 x0s = []
 ee_tgts = []
@@ -43,8 +44,8 @@ reset_conditions = []
 SENSOR_DIMS = {
     JOINT_ANGLES: 7, #9 for robot, 4 for human hand
     JOINT_VELOCITIES: 7,
-    END_EFFECTOR_POINTS: 9, #9x2 for robot eef, 9x2 for human hand, 9x2 for object
-    END_EFFECTOR_POINT_VELOCITIES: 9,
+    END_EFFECTOR_POINTS: 6, #3 for robot, 3 for human, 3 for object
+    END_EFFECTOR_POINT_VELOCITIES: 6,
     ACTION: 7,
 }
 
@@ -61,7 +62,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 1,
+    'conditions': 12,
 }
 
 # # TODO(chelsea/zoe) : Move this code to a utility function
@@ -75,16 +76,20 @@ for i in xrange(common['conditions']):
         common['target_filename'], 'trial_arm', str(i), 'target'
     )
 
-    x0 = np.zeros(32)
+    x0 = np.zeros(7+7+6*EE_POINTS.shape[0])
     # x0[:7] = [0,0.5,0,-0.5,0, 0.5,0]
     x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
-    x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
-        get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
-    )
+    # x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
+    #     get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
+    # )
 
-    ee_tgt = np.ndarray.flatten(
-        get_ee_points(EE_POINTS, ee_pos_tgt, ee_rot_tgt).T
-    )
+    #    ee_tgt = np.ndarray.flatten(
+    #     get_ee_points(EE_POINTS, ee_pos_tgt, ee_rot_tgt).T
+    # )
+    x0[14:(14+3*EE_POINTS.shape[0])] = EE_POINTS.flatten()
+    ee_tgt = EE_POINTS.flatten()
+
+ 
 
     reset_condition = {
         TRIAL_ARM: {
@@ -101,7 +106,7 @@ if not os.path.exists(common['data_files_dir']):
     os.makedirs(common['data_files_dir'])
 
 agent = {
-    'type': AgentROSControlArm, #AgentROSControlArm, #AgentMuJoCo,
+    'type': AgentMuJoCo, #AgentROSControlArm, #AgentMuJoCo,
     'filename': './mjc_models/franka-torque-control-h2r-human-simulate/franka_panda.xml',
     'data_files_dir': EXP_DIR + 'data_files/',
     #'filename': './mjc_models/pr2_arm3d.xml',
@@ -114,7 +119,7 @@ agent = {
     'simulate_human': False,
     'random_simulate_human': False,
     'test': False,
-    'reduced': 'Only7Joints',#FullState, NoHumanJoints, RelativeEEF
+    'reduced': 'Only7JointsRelativeEEF',#Only7Joints, FullState, NoHumanJoints, RelativeEEF
     'pre_timesteps': 1, #1+number of past timesteps to include
     'dt': 0.05,
     'substeps': 5,
@@ -139,7 +144,7 @@ agent = {
     #                     #[np.array([0, 0, 0, 1])], [np.array([0, 0, 0, -1])]],
     'pos_body_test_offset': [[np.array([-1.113, -1.295, 0])], [np.array([-1.226, -1.280, 0])], [np.array([-1.445, -1.222, 0])]],#, [np.array([-1.3, 1.1, 0])], [np.array([-2.1, 0.5, 0])], [np.array([-1.75,  1.25, 0])]],
     'quat_body_test_offset': [[np.array([0.996, 0, 0, -0.087])], [np.array([0.985, 0, 0, -0.174])], [np.array([0.940, 0, 0, -0.342])]],#, [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, -1])], [np.array([-0.707, 0, 0, -0.707])]],
-    'T': 200,
+    'T': 5,
     'target_end_effector': 'human_hand',
     'ee_points_tgt': ee_tgts,
     'end_effector_points': EE_POINTS,
