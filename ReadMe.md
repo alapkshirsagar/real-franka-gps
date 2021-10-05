@@ -81,7 +81,7 @@ rosrun gps_agent_pkg optitrack_publisher.py
 export ROS_MASTER_URI=http://132.72.96.38:11311
 export ROS_IP=132.72.96.57
 source devel/setup.bash
-roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.0.2
+roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.1.2
 
 ## GPS PC
 # Terminal 3
@@ -103,5 +103,7 @@ python python/gps/gps_main.py real_franka_badmm_sim2real -p 1 10
 MuJoCo to RealRobot - to change in hyperparams: 1. agent type 2. conditions 3. init_var 4. stiffness 5. stiffness_vel
                                 in cost_fk    : 1. jx_full
 
+
+cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/pascal/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/pascal/caffe/build/lib
 
 source ../../../../../devel/setup.bash

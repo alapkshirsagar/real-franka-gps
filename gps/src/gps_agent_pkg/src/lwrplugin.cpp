@@ -180,7 +180,7 @@ KUKALWRPlugin::stopping(const ros::Time& time)
 void
 KUKALWRPlugin::update(const ros::Time& time, const ros::Duration& period)
 {
-  ROS_DEBUG("Entering update()");
+  //ROS_DEBUG("Entering update()");
   last_update_time_ = time;
 
   // Check if this is a controller step
@@ -189,12 +189,12 @@ KUKALWRPlugin::update(const ros::Time& time, const ros::Duration& period)
     controller_counter_ = 0;
 
   // Update GPS sensors and controllers
-  ROS_DEBUG("  Updating sensors...");
+  //ROS_DEBUG("  Updating sensors...");
   update_sensors(last_update_time_, controller_counter_ == 0);
-  ROS_DEBUG("  Updating controllers...");
+  //ROS_DEBUG("  Updating controllers...");
   update_controllers(last_update_time_, controller_counter_ == 0);
 
-  ROS_DEBUG("  Storing torques...");
+  //ROS_DEBUG("  Storing torques...");
   // Store the torques
   
   // ROS_INFO("active arm torque0 = %f,", active_arm_torques_[0] );
@@ -211,25 +211,27 @@ KUKALWRPlugin::update(const ros::Time& time, const ros::Duration& period)
       joint_handles_[i].setCommand(active_arm_torques_(i));
     }
 
-  ROS_DEBUG("Exiting update()");
+  //ROS_DEBUG("Exiting update()");
 }
 
 void
 KUKALWRPlugin::get_joint_encoder_readings(Eigen::VectorXd &angles,
     gps::ActuatorType arm) const
 {
-  ROS_DEBUG("      Entering get_joint_encoder_readings");
+  //ROS_DEBUG("      Entering get_joint_encoder_readings");
   switch (arm)
     {
     case gps::TRIAL_ARM:
-      ROS_DEBUG("        Getting joint readings for trial arm");
+      //ROS_DEBUG("        Getting joint readings for trial arm");
 
       if (angles.rows() != joint_handles_.size())
         angles.resize(joint_handles_.size());
 
       for (uint8_t i(0); i < angles.size(); i++)
-        angles(i) = joint_handles_[i].getPosition();
-      
+        {
+          angles(i) = joint_handles_[i].getPosition();
+          //ROS_INFO("joint angles = %f,", angles(i) );
+        }
       break;
     case gps::AUXILIARY_ARM:
       ROS_DEBUG("        KUKALWRPlugin requested use of passive (missing) arm");
@@ -238,7 +240,7 @@ KUKALWRPlugin::get_joint_encoder_readings(Eigen::VectorXd &angles,
       ROS_ERROR("       KUKALWRPlugin: Invalid arm requested for encoder readings");
       break;
     }
-  ROS_DEBUG("        Exiting get_joint_encoder_readings");
+  //ROS_DEBUG("        Exiting get_joint_encoder_readings");
 }
 
 

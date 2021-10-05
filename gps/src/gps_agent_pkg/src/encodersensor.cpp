@@ -56,7 +56,7 @@ EncoderSensor::~EncoderSensor()
 // Update the sensor (called every tick).
 void EncoderSensor::update(RobotPlugin *plugin, ros::Time current_time, bool is_controller_step)
 {
-    ROS_DEBUG("      Entering EncoderSensor::update()");
+    //ROS_DEBUG("      Entering EncoderSensor::update()");
     double update_time = current_time.toSec() - previous_angles_time_.toSec();
 
     // Get new vector of joint angles from plugin.
@@ -157,7 +157,7 @@ void EncoderSensor::update(RobotPlugin *plugin, ros::Time current_time, bool is_
         // Update stored time.
         previous_angles_time_ = current_time;
     }
-    ROS_DEBUG("      Exiting EncoderSensor::update()");
+    //ROS_DEBUG("      Exiting EncoderSensor::update()");
 }
 
 void EncoderSensor::configure_sensor(OptionsMap &options)
@@ -247,10 +247,10 @@ void EncoderSensor::set_sample_data(boost::scoped_ptr<Sample>& sample, int t)
     sample->set_data_vector(t,gps::JOINT_VELOCITIES,previous_velocities_.data(),previous_velocities_.size(),SampleDataFormatEigenVector);
 
     // Set end effector point.
-    //sample->set_data_vector(t,gps::END_EFFECTOR_POINTS,previous_end_effector_points_.data(),previous_end_effector_points_.cols()*previous_end_effector_points_.rows(),SampleDataFormatEigenVector);
+    // sample->set_data_vector(t,gps::END_EFFECTOR_POINTS,previous_end_effector_points_.data(),previous_end_effector_points_.cols()*previous_end_effector_points_.rows(),SampleDataFormatEigenVector);
 
     // Set end effector point velocities.
-    //sample->set_data_vector(t,gps::END_EFFECTOR_POINT_VELOCITIES,previous_end_effector_point_velocities_.data(),previous_end_effector_point_velocities_.cols()*previous_end_effector_point_velocities_.rows(),SampleDataFormatEigenVector);
+    // sample->set_data_vector(t,gps::END_EFFECTOR_POINT_VELOCITIES,previous_end_effector_point_velocities_.data(),previous_end_effector_point_velocities_.cols()*previous_end_effector_point_velocities_.rows(),SampleDataFormatEigenVector);
 
     // Set end effector point jacobian.
     sample->set_data_vector(t,gps::END_EFFECTOR_POINT_JACOBIANS,point_jacobians_.data(),point_jacobians_.rows(),point_jacobians_.cols(),SampleDataFormatEigenMatrix);
@@ -259,10 +259,10 @@ void EncoderSensor::set_sample_data(boost::scoped_ptr<Sample>& sample, int t)
     sample->set_data_vector(t,gps::END_EFFECTOR_POINT_ROT_JACOBIANS,point_jacobians_rot_.data(),point_jacobians_rot_.rows(),point_jacobians_rot_.cols(),SampleDataFormatEigenMatrix);
 
     // Set end effector position.
-    //sample->set_data_vector(t,gps::END_EFFECTOR_POSITIONS,previous_position_.data(),3,SampleDataFormatEigenVector);
+    // sample->set_data_vector(t,gps::END_EFFECTOR_POSITIONS,previous_position_.data(),3,SampleDataFormatEigenVector);
 
     // Set end effector rotation.
-    //sample->set_data_vector(t,gps::END_EFFECTOR_ROTATIONS,previous_rotation_.data(),3,3,SampleDataFormatEigenMatrix);
+    // sample->set_data_vector(t,gps::END_EFFECTOR_ROTATIONS,previous_rotation_.data(),3,3,SampleDataFormatEigenMatrix);
 
     // Set end effector jacobian.
     sample->set_data_vector(t,gps::END_EFFECTOR_JACOBIANS,previous_jacobian_.data(),previous_jacobian_.rows(),previous_jacobian_.cols(),SampleDataFormatEigenMatrix);

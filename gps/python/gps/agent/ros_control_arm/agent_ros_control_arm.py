@@ -41,7 +41,6 @@ class AgentROSControlArm(Agent):
         """
         config = copy.deepcopy(AGENT_ROS)
 
-
         config['pid_params'] = 10.0*np.array([ \
             0.6, 0.3, 0.3, 0.1, \
             0.6, 0.3, 0.3, 0.1, \

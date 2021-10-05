@@ -72,7 +72,7 @@ void ROSTopicSensor::set_sample_data_format(boost::scoped_ptr<Sample>& sample)
 void ROSTopicSensor::set_sample_data(boost::scoped_ptr<Sample>& sample, int t) 
 {
     sample->set_data_vector(t,gps::END_EFFECTOR_POINTS,latest_data_.data(),latest_data_.size(),SampleDataFormatEigenVector);
-    sample->set_data_vector(t,gps::END_EFFECTOR_POINT_VELOCITIES,previous_data_.data(),previous_data_.size(),SampleDataFormatEigenVector);
+    sample->set_data_vector(t,gps::END_EFFECTOR_POINT_VELOCITIES,difference_data_.data(),difference_data_.size(),SampleDataFormatEigenVector);
 
     // sample->set_data_vector(t,gps::JOINT_ANGLES,previous_angles_.data(),previous_angles_.size(),SampleDataFormatEigenVector);
     // sample->set_data_vector(t,gps::IMAGE_FEAT,latest_data_eigen_.data(),latest_data_eigen_.size(),SampleDataFormatEigenVector);
