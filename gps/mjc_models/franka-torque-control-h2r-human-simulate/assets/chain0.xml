@@ -3,31 +3,31 @@
         <geom class="panda_viz" mesh="link0_viz"/>
         <geom class="panda_col" mesh="link0_col"/>
         <body name="panda0_link1" pos="0 0 0.333">
-            <joint name="panda0_joint1" range="-2.9671 2.9671" class="panda_arm"/>
+            <joint name="panda0_joint1" limited="true" range="-2.8973 2.8973" class="panda_arm"/>
             <geom class="panda_viz" mesh="link1_viz"/>
             <geom class="panda_col" mesh="link1_col"/>
             <body name="panda0_link2" pos="0 0 0" quat="0.707107 -0.707107 0 0">
-                <joint name="panda0_joint2" range="-1.8326 1.8326" class="panda_arm"/>
+                <joint name="panda0_joint2" limited="true" range="-1.7628 1.7628" class="panda_arm"/>
                 <geom class="panda_viz" mesh="link2_viz"/>
                 <geom class="panda_col" mesh="link2_col"/>
                 <body name="panda0_link3" pos="0 -0.316 0" quat="0.707107 0.707107 0 0">
-                    <joint name="panda0_joint3" range="-2.9671 2.9671" class="panda_arm"/>
+                    <joint name="panda0_joint3" limited="true" range="-2.8973 2.8973" class="panda_arm"/>
                     <geom class="panda_viz" mesh="link3_viz"/>
                     <geom class="panda_col" mesh="link3_col"/>
                     <body name="panda0_link4" pos="0.0825 0 0" quat="0.707107 0.707107 0 0">
-                        <joint name="panda0_joint4" range="-3.1416 0" class="panda_arm"/>
+                        <joint name="panda0_joint4" limited="true" range="-3.0718 -0.0698" class="panda_arm"/>
                         <geom class="panda_viz" mesh="link4_viz"/>
                         <geom class="panda_col" mesh="link4_col"/>
                         <body name="panda0_link5" pos="-0.0825 0.384 0" quat="0.707107 -0.707107 0 0">
-                            <joint name="panda0_joint5" range="-2.9671 2.9671" class="panda_forearm"/>
+                            <joint name="panda0_joint5" limited="true" range="-2.8973 2.8973" class="panda_forearm"/>
                             <geom class="panda_viz" mesh="link5_viz"/>
                             <geom class="panda_col" mesh="link5_col"/>
                             <body name="panda0_link6" pos="0 0 0" quat="0.707107 0.707107 0 0">
-                                <joint name="panda0_joint6" range="-0.0873 3.8223" class="panda_forearm"/>
+                                <joint name="panda0_joint6" limited="true" range="-0.0175 3.7525" class="panda_forearm"/>
                                 <geom class="panda_viz" mesh="link6_viz"/>
                                 <geom class="panda_col" mesh="link6_col"/>
                                 <body name="panda0_link7" pos="0.088 0 0" quat="0.707107 0.707107 0 0">
-                                    <joint name="panda0_joint7" range="-2.9671 2.9671" class="panda_forearm"/>
+                                    <joint name="panda0_joint7" limited="true" range="-2.8973 2.8973" class="panda_forearm"/>
                                     <geom class="panda_viz" quat="0.92388 0 0 0.382683" mesh="link7_viz"/>
                                     <geom class="panda_col" quat="0.92388 0 0 0.382683" mesh="link7_col"/>
                                     <geom pos="0 0 0.107"  class="panda_viz" mesh="hand_viz"/>

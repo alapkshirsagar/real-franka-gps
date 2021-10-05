@@ -12,7 +12,6 @@ from gps.agent.ros_control_arm.agent_ros_control_arm import AgentROSControlArm
 from gps.algorithm.algorithm_badmm import AlgorithmBADMM
 from gps.algorithm.cost.cost_fk import CostFK
 from gps.algorithm.cost.cost_action import CostAction
-from gps.algorithm.cost.cost_joint_velocity import CostJointVelocity
 from gps.algorithm.cost.cost_sum import CostSum
 from gps.algorithm.cost.cost_state import CostState
 from gps.algorithm.cost.cost_utils import RAMP_FINAL_ONLY
@@ -34,9 +33,8 @@ from gps.gui.target_setup_gui import load_pose_from_npz
 from gps.utility.general_utils import get_ee_points
 
 ALGORITHM_NN_LIBRARY = "caffe"
-# EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
-#                       [0.22, 0.05, 0.5]])
-EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55]])
+EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
+                      [0.22, 0.05, 0.5]])
 
 x0s = []
 ee_tgts = []
@@ -45,17 +43,16 @@ reset_conditions = []
 SENSOR_DIMS = {
     JOINT_ANGLES: 7, #9 for robot, 4 for human hand
     JOINT_VELOCITIES: 7,
-    END_EFFECTOR_POINTS: 6, #3 for robot, 3 for human, 3 for object
-    END_EFFECTOR_POINT_VELOCITIES: 6,
+    END_EFFECTOR_POINTS: 9, #9x2 for robot eef, 9x2 for human hand, 9x2 for object
+    END_EFFECTOR_POINT_VELOCITIES: 9,
     ACTION: 7,
 }
 
 # Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1])
 # Franka_Gains = np.array([24, 12, 10, 7, 1, 1, 1])
-# Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.001, 0.001, 0.001])
-Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.01, 0.01, 0.01])
+Franka_Gains = np.array([0.5, 0.5,0.5, 0.5, 0.001, 0.001, 0.001])
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
-#EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
+# EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
 EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
 
 common = {
@@ -65,7 +62,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 12,
+    'conditions': 1,
 }
 
 # # TODO(chelsea/zoe) : Move this code to a utility function
@@ -79,20 +76,16 @@ for i in xrange(common['conditions']):
         common['target_filename'], 'trial_arm', str(i), 'target'
     )
 
-    x0 = np.zeros(7+7+6*EE_POINTS.shape[0])
+    x0 = np.zeros(32)
     # x0[:7] = [0,0.5,0,-0.5,0, 0.5,0]
     x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
-    # x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
-    #     get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
-    # )
+    x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
+        get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
+    )
 
-    #    ee_tgt = np.ndarray.flatten(
-    #     get_ee_points(EE_POINTS, ee_pos_tgt, ee_rot_tgt).T
-    # )
-    x0[14:(14+3*EE_POINTS.shape[0])] = EE_POINTS.flatten()
-    ee_tgt = EE_POINTS.flatten()
-
-
+    ee_tgt = np.ndarray.flatten(
+        get_ee_points(EE_POINTS, ee_pos_tgt, ee_rot_tgt).T
+    )
 
     reset_condition = {
         TRIAL_ARM: {
@@ -122,23 +115,20 @@ agent = {
     'simulate_human': False,
     'random_simulate_human': False,
     'test': False,
-    'reduced': 'Only7JointsRelativeEEF',#Only7Joints, FullState, NoHumanJoints, RelativeEEF
+    'reduced': 'Only7Joints',#FullState, NoHumanJoints, RelativeEEF
     'pre_timesteps': 1, #1+number of past timesteps to include
     'dt': 0.1,#0.05
     'substeps': 5,
     'conditions': common['conditions'],
     'reset_conditions': reset_conditions,
     'pos_body_idx': np.array([2]),
-    # 'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])]],
-    # 'quat_body_offset': [[np.array([0, 0, 0, 1])]],
-
-    'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])],[np.array([-0.33, -0.7, -0.23])],[np.array([-0.7, 0.18, -0.23])],
-                        [np.array([-0.7, -0.7, -0.23])],[np.array([-0.33, -0.05, -0.23])],[np.array([-0.33, -0.05, 0.7])],
-                        [np.array([-0.33, 0.18, 0.7])],[np.array([-0.33, -0.7, 0.7])],[np.array([-0.7, 0.18, 0.7])],
-                        [np.array([-0.7, -0.7, 0.7])],[np.array([-0.7, -0.05, -0.23])],[np.array([-0.7, -0.05, 0.7])]],
-    'quat_body_offset': [[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
-                        [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
-                        [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])]],
+    'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])]],#,[np.array([-0.33, -0.7, -0.23])],[np.array([-0.7, 0.18, -0.23])],
+                        # [np.array([-0.7, -0.7, -0.23])],[np.array([-0.33, -0.05, -0.23])],[np.array([-0.33, -0.05, 0.7])],
+                        # [np.array([-0.33, 0.18, 0.7])],[np.array([-0.33, -0.7, 0.7])],[np.array([-0.7, 0.18, 0.7])],
+                        # [np.array([-0.7, -0.7, 0.7])],[np.array([-0.7, -0.05, -0.23])],[np.array([-0.7, -0.05, 0.7])]],
+    'quat_body_offset': [[np.array([0, 0, 0, 1])]],#,[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
+                        # [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
+                        # [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])]],
 
     # 'pos_body_offset': [[np.array([-0.3, 0, -0.2])]],#, [np.array([-0.1, 0, -0.2])], [np.array([-0.1, 0, -0.2])]],#, [np.array([-1.95, -0.95, 0])]],#,  [np.array([-1.95,  0.95, 0])], [np.array([-1, 1.3, 0])]],
     #                     #[np.array([0, 0.2, 0])], [np.array([-2.3,  0.2, 0])]],
@@ -150,7 +140,7 @@ agent = {
     #                     #[np.array([0, 0, 0, 1])], [np.array([0, 0, 0, -1])]],
     'pos_body_test_offset': [[np.array([-1.113, -1.295, 0])], [np.array([-1.226, -1.280, 0])], [np.array([-1.445, -1.222, 0])]],#, [np.array([-1.3, 1.1, 0])], [np.array([-2.1, 0.5, 0])], [np.array([-1.75,  1.25, 0])]],
     'quat_body_test_offset': [[np.array([0.996, 0, 0, -0.087])], [np.array([0.985, 0, 0, -0.174])], [np.array([0.940, 0, 0, -0.342])]],#, [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, -1])], [np.array([-0.707, 0, 0, -0.707])]],
-    'T': 400, #400,
+    'T': 400,
     'target_end_effector': 'human_hand',
     'ee_points_tgt': ee_tgts,
     'end_effector_points': EE_POINTS,
@@ -182,7 +172,7 @@ algorithm['init_traj_distr'] = {
     'type': init_lqr,
     'init_gains':  1.0 / Franka_Gains,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
-    'init_var': 120, #0.25 for real robot, #0.5, #1000 for muMuJoCo,
+    'init_var': 150, #0.25 for real robot, #0.5, #1000 for muMuJoCo,
     'stiffness': 1.0, #3.0-for real robot, #1.0 for MuJoCo,
     'stiffness_vel':0.5, #0.25-for real robot,#0.5 for MuJoCo,
     'dQ': SENSOR_DIMS[ACTION],
@@ -193,11 +183,6 @@ algorithm['init_traj_distr'] = {
 torque_cost = {
     'type': CostAction,
     'wu': 5e-5 / Franka_Gains,
-}
-
-joint_velocities_cost = {
-    'type': CostJointVelocity,
-    'wv': 5e-5 / Franka_Gains,
 }
 
 fk_cost = {
@@ -238,8 +223,8 @@ state_cost_close = {
 
 algorithm['cost'] = {
     'type': CostSum,
-    'costs': [torque_cost, fk_cost, joint_velocities_cost],
-    'weights': [5.0, 1.0, 10000.0],
+    'costs': [torque_cost, fk_cost],
+    'weights': [0.0, 1.0],
 }
 
 algorithm['dynamics'] = {

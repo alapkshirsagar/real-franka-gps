@@ -44,7 +44,7 @@ try:
         'end_effector_points': np.array([]),
         #TODO: Actually pass in low gains and high gains and use both
         #      for the position controller.
-        'pid_params': 7.0*np.array([
+        'pid_params': 10.0*np.array([
             0.6, 0.3, 0.3, 0.1,
             0.6, 0.3, 0.3, 0.1,
             0.6, 0.3, 0.3, 0.1,

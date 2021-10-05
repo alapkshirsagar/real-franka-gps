@@ -63,6 +63,11 @@ COST_ACTION = {
     'wu': np.array([]),  # Torque penalties, must be 1 x dU numpy array.
 }
 
+# CostJointVelocity
+COST_JOINT_VELOCITY = {
+    'wv': np.array([]),  # Joint velocity penalties, must be 1 x dU numpy array.
+}
+
 
 # CostLinWP
 COST_LIN_WP = {

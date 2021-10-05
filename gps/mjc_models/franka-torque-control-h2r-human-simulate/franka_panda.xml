@@ -29,7 +29,7 @@
         <include file="assets/chain0.xml"/>
     </worldbody>
 
-    <include file='assets/actuator0.xml'/>
+    <include file='assets/actuator1.xml'/>
     <!-- <include file='assets/actuator_humanoid.xml'/> -->
 
 

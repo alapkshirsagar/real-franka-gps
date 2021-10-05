@@ -47,7 +47,8 @@ SENSOR_DIMS = {
 
 # PR2_GAINS = np.array([]) #
 #PR2_GAINS = np.array([3.09, 1.08, 0.393, 0.674, 0.111, 0.152, 0.098])
-PR2_GAINS = np.array([24, 12, 10, 7, 3, 3, 6]) # 
+FRANKA_GAINS = np.array([0.1, 0.1, 0.1, 0.1, 0.001, 0.001, 0.001]) # [24, 12, 10, 7, 3, 3, 6]
+
 
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
 EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_example/'
@@ -63,7 +64,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 3,
+    'conditions': 1,
 }
 
 # TODO(chelsea/zoe) : Move this code to a utility function
@@ -144,12 +145,12 @@ algorithm = {
 
 algorithm['init_traj_distr'] = {
     'type': init_lqr,
-    'init_gains':  1.0 / PR2_GAINS,
+    'init_gains':  1.0 / FRANKA_GAINS,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
     # 'init_var': 1.0,
-    'init_var': 0.25,#1.0, # Kinda
-    'stiffness': 3,
-    'stiffness_vel': 0.25,
+    'init_var': 0.5, #0.25,#1.0, # Kinda
+    'stiffness': 1.0, #3,
+    'stiffness_vel': 0.5, #0.25,
     'final_weight': 50,
     'dt': agent['dt'],
     'T': agent['T'],
@@ -157,7 +158,7 @@ algorithm['init_traj_distr'] = {
 
 torque_cost = {
     'type': CostAction,
-    'wu': 5e-3 / PR2_GAINS,
+    'wu': 5e-3 / FRANKA_GAINS,
 }
 
 
