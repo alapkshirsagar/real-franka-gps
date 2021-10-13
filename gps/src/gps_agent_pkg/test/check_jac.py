@@ -37,7 +37,7 @@ def listen_report(msg):
     eerotjac = np.array(eerotjac.data).reshape(eerotjac.shape)
 
     checkjac, checkr = check_eept_jacobian(eejac[0], eerot[0])
-    import pdb; pdb.set_trace();
+    # import pdb; pdb.set_trace();
 
 def check_eept_jacobian(eejac, eerot, ee_sites=EE_SITES):
     n_sites = ee_sites.shape[0]

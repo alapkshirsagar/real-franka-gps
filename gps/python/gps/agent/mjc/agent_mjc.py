@@ -35,8 +35,14 @@ class AgentMuJoCo(Agent):
         condition.
         """
         conds = self._hyperparams['conditions']
-        for field in ('x0','x0_mujoco', 'x0var', 'pos_body_idx', 'pos_body_offset', 'quat_body_offset', 'noisy_body_idx', 'noisy_body_var', 'filename'):
-            self._hyperparams[field] = setup(self._hyperparams[field], conds)
+        # for field in ('x0','x0_mujoco', 'x0var', 'pos_body_idx', 'pos_body_offset', 'quat_body_offset', 'noisy_body_idx', 'noisy_body_var', 'filename'):
+        #     self._hyperparams[field] = setup(self._hyperparams[field], conds)
+        if self._hyperparams['test']:
+            for field in ('x0','x0_mujoco', 'x0var', 'pos_body_idx', 'noisy_body_idx', 'noisy_body_var', 'filename', 'pos_human_test'):
+                self._hyperparams[field] = setup(self._hyperparams[field], conds)
+        else:
+            for field in ('x0','x0_mujoco', 'x0var', 'pos_body_idx', 'noisy_body_idx', 'noisy_body_var', 'filename', 'pos_human'):
+                self._hyperparams[field] = setup(self._hyperparams[field], conds)
 
     def _setup_world(self, filename):
         """
@@ -63,17 +69,38 @@ class AgentMuJoCo(Agent):
                 self._world.append(mjcpy.MJCWorld(self._hyperparams['filename'][i]))
                 self._model.append(self._world[i].get_model())
 
-        for i in range(self._hyperparams['conditions']):
-            for j in range(len(self._hyperparams['pos_body_idx'][i])):
-                idx = self._hyperparams['pos_body_idx'][i][j]
-                self._model[i]['body_pos'][idx, :] += \
-                        self._hyperparams['pos_body_offset'][i][j]
-                if 'quat_body_offset' in self._hyperparams:
-                    self._model[i]['body_quat'][idx, :] += \
-                            self._hyperparams['quat_body_offset'][i][j]
-            self.shoulder_end.append(0.8*(0.5+np.random.random()))
-            self.elbow_end.append(0.8*(0.5+np.random.random()))
-            self.t_end.append((0.5+np.random.random())*100)
+        if self._hyperparams['human_ik']:
+            for i in range(self._hyperparams['conditions']):
+                # print(self._hyperparams['pos_human'][0][1])
+                if self._hyperparams['test']:
+                    [theta0, theta1, theta2] = self.inverse_kinematics_3dof(1.2, 0.3, 0.3, 1, self._hyperparams['pos_human_test'][i][0], self._hyperparams['pos_human_test'][i][1], self._hyperparams['pos_human_test'][i][2])
+                else:
+                    [theta0, theta1, theta2] = self.inverse_kinematics_3dof(1.2, 0.3, 0.3, 1, self._hyperparams['pos_human'][i][0], self._hyperparams['pos_human'][i][1], self._hyperparams['pos_human'][i][2])
+                # print([theta0, theta1, theta2])
+                for j in range(len(self._hyperparams['pos_body_idx'][i])):
+                    idx = self._hyperparams['pos_body_idx'][i][j]
+                    self._model[i]['body_pos'][idx, :] = [1*np.cos(theta0), 1*np.sin(theta0), 0]
+                    if 'quat_body_offset' in self._hyperparams:
+                        self._model[i]['body_quat'][idx, :] = [np.cos((np.pi+theta0)/2),0,0,np.sin((np.pi+theta0)/2)]
+                self.shoulder_end.append(theta1)
+                self.elbow_end.append(theta2)
+                self.t_end.append(self._hyperparams['t_end'][i])
+                if not self._hyperparams['simulate_human']:
+                    self._hyperparams['x0_mujoco'][i][1] = theta1
+                    self._hyperparams['x0_mujoco'][i][2] = theta2
+                # mj_X = self._hyperparams['x0_mujoco'][i]
+        else:
+            for i in range(self._hyperparams['conditions']):
+                for j in range(len(self._hyperparams['pos_body_idx'][i])):
+                    idx = self._hyperparams['pos_body_idx'][i][j]
+                    self._model[i]['body_pos'][idx, :] += \
+                            self._hyperparams['pos_body_offset'][i][j]
+                    if 'quat_body_offset' in self._hyperparams:
+                        self._model[i]['body_quat'][idx, :] += \
+                                self._hyperparams['quat_body_offset'][i][j]
+                self.shoulder_end.append(0.8*(0.5+np.random.random()))
+                self.elbow_end.append(0.8*(0.5+np.random.random()))
+                self.t_end.append((0.5+np.random.random())*100)
 
 
             mj_X = self._hyperparams['x0_mujoco'][i]
@@ -162,15 +189,15 @@ class AgentMuJoCo(Agent):
             noisy: Whether or not to use noise during sampling.
         """
         ##Test case
-        print(iteration)
-        if self._hyperparams['test'] and verbose:
-            idx = self._hyperparams['pos_body_idx']
-            self._model[condition]['body_pos'][idx, :] += -self._hyperparams['pos_body_offset'][condition][0]
-            if 'quat_body_offset' in self._hyperparams:
-                self._model[condition]['body_quat'][idx, :] += -self._hyperparams['quat_body_offset'][condition][0]
+        # print(iteration)
+        # if self._hyperparams['test'] and verbose:
+        #     idx = self._hyperparams['pos_body_idx']
+        #     self._model[condition]['body_pos'][idx, :] += -self._hyperparams['pos_body_offset'][condition][0]
+        #     if 'quat_body_offset' in self._hyperparams:
+        #         self._model[condition]['body_quat'][idx, :] += -self._hyperparams['quat_body_offset'][condition][0]
 
-            self._model[condition]['body_pos'][idx, :] += self._hyperparams['pos_body_test_offset'][condition]
-            self._model[condition]['body_quat'][idx, :] += self._hyperparams['quat_body_test_offset'][condition]
+        #     self._model[condition]['body_pos'][idx, :] += self._hyperparams['pos_body_test_offset'][condition]
+        #     self._model[condition]['body_quat'][idx, :] += self._hyperparams['quat_body_test_offset'][condition]
 
         # Create new sample, populate first time step.
         feature_fn = None
@@ -252,8 +279,8 @@ class AgentMuJoCo(Agent):
                     #mj_X[1] = 0+(0.8)*t/self.T
                     #mj_X[2] = 0+(0.8)*t/self.T
             else:
-                shoulder = 0.8
-                elbow = 0.8
+                shoulder = shoulder_end
+                elbow = elbow_end
                 mj_X[1] = shoulder
                 mj_X[2] = elbow
             # Compute distance between eef and hand
@@ -595,11 +622,21 @@ class AgentMuJoCo(Agent):
 
         return mj_X
 
-    def inverse_kinematics_2dof(self, l0, l1, l2, px, py, pz):
-        x = np.sqrt(px**2+py**2+pz**2)
+    def inverse_kinematics_2dof(self, l0, l1, l2, r, px, py, pz):
+        # x = np.sqrt(px**2+py**2+pz**2)
+        x = r - np.sqrt(px**2+py**2)
         y = pz-l0
-        theta2 = np.arccos((x^2+y^2-l1^2-l2^2)/(2*l1*l2))
-        theta1 = np.arctan2(y,x) - arctan2(l2*np.sin(theta2), l1+l2*np.cos(theta2))
-        return theta1, theta1+theta2
+        theta2 = np.arccos(np.clip((x**2+y**2-l1**2-l2**2)/(2*l1*l2), -1, 1))
+        theta1 = np.arctan2(y,x) - np.arctan2(l2*np.sin(theta2), l1+l2*np.cos(theta2))
+        # print(theta1+np.pi/2)
+        # print(theta2)
+        # m = m +1
+        return theta1+np.pi/2, theta2
+
+    def inverse_kinematics_3dof(self, l0, l1, l2, r, px, py, pz):
+        theta0 = np.arctan2(py,px)
+        x_dash = r - np.sqrt(px**2+py**2)
+        [theta1, theta2] = self.inverse_kinematics_2dof(l0, l1, l2, r, px, py, pz)
+        return theta0, theta1, theta2
 
         #Close gripper

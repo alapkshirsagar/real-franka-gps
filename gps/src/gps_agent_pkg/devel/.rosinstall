@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/pascal/Kuka_Franka_GPS/src/real-franka-gps/gps/src/gps_agent_pkg/devel/setup.sh
+    local-name: /home/franka2/Kuka_Franka_GPS/src/real-franka-gps/gps/src/gps_agent_pkg/devel/setup.sh

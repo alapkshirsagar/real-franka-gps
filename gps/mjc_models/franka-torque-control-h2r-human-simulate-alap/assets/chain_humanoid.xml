@@ -1,0 +1,78 @@
+<mujocoinclude>
+    <body pos="0 0 0">
+         <geom type="box" size=".2 .2 0.7" rgba="0 .9 0 1"/>
+  </body>
+  <body name='torso' pos='1 0 1.4' quat='0 0 0 1'>
+      <!-- <joint name='root' type='free' pos='0 0 0' limited='false' damping='0' armature='0' stiffness='0'/> -->
+      <geom name='torso1' type='capsule' fromto='0 -.07 0 0 .07 0'  size='0.07' />
+      <geom name='head' type='sphere' pos='0 0 .19' size='.09'/>
+      <geom name='uwaist' type='capsule' fromto='-.01 -.06 -.12 -.01 .06 -.12' size='0.06'/>
+      <body name='lwaist' pos='-.01 0 -0.260' quat='1.000 0 -0.002 0' >
+          <geom name='lwaist' type='capsule' fromto='0 -.06 0 0 .06 0'  size='0.06' />
+          <!-- <joint name='abdomen_z' type='hinge' pos='0 0 0.065' axis='0 0 1' range='-45 45' damping='5' stiffness='20' armature='0.02' />
+          <joint name='abdomen_y' type='hinge' pos='0 0 0.065' axis='0 1 0' range='-75 30' damping='5' stiffness='10' armature='0.02' /> -->
+          <body name='pelvis' pos='0 0 -0.165' quat='1.000 0 -0.002 0' >
+              <!-- <joint name='abdomen_x' type='hinge' pos='0 0 0.1' axis='1 0 0' range='-35 35' damping='5' stiffness='10' armature='0.02' /> -->
+              <geom name='butt' type='capsule' fromto='-.02 -.07 0 -.02 .07 0'  size='0.09' />
+              <body name='right_thigh' pos='0 -0.1 -0.04' >
+                  <!-- <joint name='right_hip_x' type='hinge' pos='0 0 0' axis='1 0 0' range='-25 5'   damping='5' stiffness='10' armature='0.01' />
+                  <joint name='right_hip_z' type='hinge' pos='0 0 0' axis='0 0 1' range='-60 35'  damping='5' stiffness='10' armature='0.01' />
+                  <joint name='right_hip_y' type='hinge' pos='0 0 0' axis='0 1 0' range='-110 20' damping='5' stiffness='20' armature='0.0080' /> -->
+                  <geom name='right_thigh1' type='capsule' fromto='0 0 0 0 0.01 -.34'  size='0.06' />
+                  <body name='right_shin' pos='0 0.01 -0.403' >
+                      <!-- <joint name='right_knee' type='hinge' pos='0 0 .02' axis='0 -1 0' range='-160 -2' armature='0.0060' /> -->
+                      <geom name='right_shin1' type='capsule' fromto='0 0 0 0 0 -.3'   size='0.049' />
+                      <body name='right_foot' pos='0 0 -.39' >
+                          <!-- <joint name='right_ankle_y' type='hinge' pos='0 0 0.08' axis='0 1 0'   range='-50 50' stiffness='4' armature='0.0008' />
+                          <joint name='right_ankle_x' type='hinge' pos='0 0 0.04' axis='1 0 0.5' range='-50 50' stiffness='1'  armature='0.0006' /> -->
+                          <geom name='right_foot_cap1' type='capsule' fromto='-.07 -0.02 0 0.14 -0.04 0'  size='0.027' />
+                          <geom name='right_foot_cap2' type='capsule' fromto='-.07 0 0 0.14  0.02 0'  size='0.027' />
+                      </body>
+                  </body>
+              </body>
+              <body name='left_thigh' pos='0 0.1 -0.04' >
+                  <!-- <joint name='left_hip_x' type='hinge' pos='0 0 0' axis='-1 0 0' range='-25 5'  damping='5' stiffness='10' armature='0.01' />
+                  <joint name='left_hip_z' type='hinge' pos='0 0 0' axis='0 0 -1' range='-60 35' damping='5' stiffness='10' armature='0.01' />
+                  <joint name='left_hip_y' type='hinge' pos='0 0 0' axis='0 1 0' range='-120 20' damping='5' stiffness='20' armature='0.01' /> -->
+                  <geom name='left_thigh1' type='capsule' fromto='0 0 0 0 -0.01 -.34'  size='0.06' />
+                  <body name='left_shin' pos='0 -0.01 -0.403' >
+                      <!-- <joint name='left_knee' type='hinge' pos='0 0 .02' axis='0 -1 0' range='-160 -2' stiffness='1' armature='0.0060' /> -->
+                      <geom name='left_shin1' type='capsule' fromto='0 0 0 0 0 -.3'   size='0.049' />
+                      <body name='left_foot' pos='0 0 -.39' >
+                          <!-- <joint name='left_ankle_y' type='hinge' pos='0 0 0.08' axis='0 1 0'   range='-50 50'  stiffness='4' armature='0.0008' />
+                          <joint name='left_ankle_x' type='hinge' pos='0 0 0.04' axis='1 0 0.5' range='-50 50'  stiffness='1'  armature='0.0006' /> -->
+                          <geom name='left_foot_cap1' type='capsule' fromto='-.07 0.02 0 0.14 0.04 0'  size='0.027' />
+                          <geom name='left_foot_cap2' type='capsule' fromto='-.07 0 0 0.14  -0.02 0'  size='0.027' />
+                      </body>
+                  </body>
+              </body>
+          </body>
+      </body>
+      <body name='right_upper_arm' pos='0 -0.17 0.06' >
+          <joint name='right_shoulder1' type='hinge' pos='0 0 0' axis='1 0 0' class="panda_arm" range='-85 60' stiffness='0' armature='0.0068' />
+          <joint name='right_shoulder2' type='hinge' pos='0 0 0' axis='0 0 1' class="panda_arm" range='-85 60' stiffness='0'  armature='0.0051' />
+          <geom name='right_uarm1' type='capsule' fromto='0 0 0 0 -0.28 0'  size='0.04 0.16' />
+          <body name='right_lower_arm' pos='0 -0.3 0' >
+               <joint name='right_elbow' type='hinge' pos='0 0 0' axis='0 0 1' class="panda_arm" range='-90 50'  stiffness='0' armature='0.0028' />
+               <joint name='right_elbow2' type='hinge' pos='0 0 0' axis='0 1 0' class="panda_arm" range='-90 90'  stiffness='0' armature='0.0028' />
+
+              <geom name='right_larm' type='capsule' fromto='0 -0.03 0 0 -0.3 0'  size='0.031' />
+              <geom name='right_hand' type='sphere' pos='0 -0.3 0'  size='0.04'/>
+              <geom name="ball_geom" rgba="0.8 0.6 0.6 1" type="cylinder" fromto="0.0 -0.3 0.15 0.0 -0.3 -0.15" size="0.028" density="2000" contype="2" conaffinity="1" />
+              <site name="right_hand_down" pos='0 -0.3 0.25' size="0.01" />
+              <site name="right_hand_up" pos='0 -0.3 -0.05' size="0.01" />
+
+        </body>
+    </body>
+      <body name='left_upper_arm' pos='0 0.17 0.06' >
+          <!-- <joint name='left_shoulder1' type='hinge' pos='0 0 0' axis='2 -1 1' range='-60 85' stiffness='1' armature='0.0068' />
+          <joint name='left_shoulder2' type='hinge' pos='0 0 0' axis='0 1 1' range='-60 85'  stiffness='1' armature='0.0051' /> -->
+          <geom name='left_uarm1' type='capsule' fromto='0 0 0 0 .14 -.24'  size='0.04 0.16' />
+          <body name='left_lower_arm' pos='0 .15 -.25' >
+              <!-- <joint name='left_elbow' type='hinge' pos='0 0 0' axis='0 -1 -1' range='-90 50' stiffness='0' armature='0.0028' /> -->
+              <geom name='left_larm' type='capsule' fromto='0 0.02 -0.02 -0.02 .15 -.25'  size='0.031' />
+              <geom name='left_hand' type='sphere' pos='-0.02 0.15 -0.25'  size='0.04'/>
+          </body>
+      </body>
+  </body>
+</mujocoinclude>

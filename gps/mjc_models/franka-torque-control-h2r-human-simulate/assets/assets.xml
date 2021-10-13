@@ -37,13 +37,13 @@
                 <geom contype="1" conaffinity="1" group="3" type="mesh" rgba=".5 .6 .7 1"/>
             </default>
             <default class="panda_arm">
-                <joint damping="100"/>
+                <joint damping="50"/>
             </default>
              <default class="panda_forearm">
-                <joint damping="10"/>
+                <joint damping="50"/>
             </default>
              <default class="panda_finger">
-                <joint damping="50"/>
+                <joint damping="1000"/>
             </default>
         </default>
     </default>

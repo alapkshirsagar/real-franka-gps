@@ -52,6 +52,6 @@ def run_offline():
                 n += 1
         algorithm.iteration([agent.get_samples(m, -n) for m in range(conditions)])
         print 'Finished itr ', itr
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
 run_offline()

@@ -76,7 +76,7 @@ class AgentROSControlArm(Agent):
                 print 'Could not find transform'
             r.sleep()
 
-        eepts_notgt = np.concatenate([trans_human, trans_human, trans_robot])
+        eepts_notgt = np.concatenate([trans_human, trans_human])
         # if self._hyperparams['target_end_effector'] == 'human_hand':
         #     for field in ['x0']:
         #         self._hyperparams[field] = setup(self._hyperparams[field], \
@@ -228,7 +228,7 @@ class AgentROSControlArm(Agent):
                 self._hyperparams['ee_points_tgt'][condition].tolist()
         trial_command.state_datatypes = self._hyperparams['state_include']
         trial_command.obs_datatypes = self._hyperparams['state_include']
-
+        # import pdb; pdb.set_trace()
         if self.use_tf is False:
             sample_msg = self._trial_service.publish_and_wait(
                 trial_command, timeout=self._hyperparams['trial_timeout']

@@ -50,10 +50,10 @@ SENSOR_DIMS = {
     ACTION: 7,
 }
 
-# Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1])
+Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1])
 # Franka_Gains = np.array([24, 12, 10, 7, 1, 1, 1])
 # Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.001, 0.001, 0.001])
-Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.01, 0.01, 0.01])
+# Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.01, 0.01, 0.01])
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
 #EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
 EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
@@ -65,7 +65,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 12,
+    'conditions': 8,
 }
 
 # # TODO(chelsea/zoe) : Move this code to a utility function
@@ -81,7 +81,8 @@ for i in xrange(common['conditions']):
 
     x0 = np.zeros(7+7+6*EE_POINTS.shape[0])
     # x0[:7] = [0,0.5,0,-0.5,0, 0.5,0]
-    x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
+    # x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
+    x0[:7] = [1.14, 0, -1.2, -2, 0, 3.8, 1.8]
     # x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
     #     get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
     # )
@@ -113,18 +114,24 @@ agent = {
     'filename': './mjc_models/franka-torque-control-h2r-human-simulate/franka_panda.xml',
     'data_files_dir': EXP_DIR + 'data_files/',
     #'filename': './mjc_models/pr2_arm3d.xml',
-    'x0': np.concatenate([np.array([-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]),
+    'x0': np.concatenate([np.array([0, 0, -1.2, -2, 0, 3.8, 1.8]),
                           np.zeros(7)]), #These values correspond to the joint angles and velocities
     # 'x0': x0s,
-    'x0_mujoco': np.concatenate([np.array([1.2,0,0,0, -0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]),
+    'x0_mujoco': np.concatenate([np.array([1.2,0,0,0, 1.14, 0, -1.2, -2, 0, 3.8, 1.8]),
                           np.zeros(11)]), #These values correspond to the joint angles and velocities
+    # 'x0': np.concatenate([np.array([-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]),
+    #                       np.zeros(7)]), #These values correspond to the joint angles and velocities
+    # 'x0': x0s,
+    # 'x0_mujoco': np.concatenate([np.array([1.2,0,0,0, -0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]),
+    #                       np.zeros(11)]), #These values correspond to the joint angles and velocities
     'pickup': False,
     'simulate_human': False,
     'random_simulate_human': False,
     'test': False,
+    'human_ik': True,
     'reduced': 'Only7JointsRelativeEEF',#Only7Joints, FullState, NoHumanJoints, RelativeEEF
     'pre_timesteps': 1, #1+number of past timesteps to include
-    'dt': 0.1,#0.05
+    'dt': 0.05,#0.05
     'substeps': 5,
     'conditions': common['conditions'],
     'reset_conditions': reset_conditions,
@@ -132,13 +139,19 @@ agent = {
     # 'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])]],
     # 'quat_body_offset': [[np.array([0, 0, 0, 1])]],
 
-    'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])],[np.array([-0.33, -0.7, -0.23])],[np.array([-0.7, 0.18, -0.23])],
-                        [np.array([-0.7, -0.7, -0.23])],[np.array([-0.33, -0.05, -0.23])],[np.array([-0.33, -0.05, 0.7])],
-                        [np.array([-0.33, 0.18, 0.7])],[np.array([-0.33, -0.7, 0.7])],[np.array([-0.7, 0.18, 0.7])],
-                        [np.array([-0.7, -0.7, 0.7])],[np.array([-0.7, -0.05, -0.23])],[np.array([-0.7, -0.05, 0.7])]],
-    'quat_body_offset': [[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
-                        [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
-                        [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])]],
+    'pos_human': [np.array([r*np.cos(theta*np.pi/180),r*np.sin(theta*np.pi/180),z]) for r in np.linspace(0.6, 0.9, num = 2)
+                        for theta in np.linspace(0, 90, num = 2)
+                            for z in np.linspace(0.9, 1.2, num = 2)],
+    'quat_body_offset': [[np.array([1, 0, 0, 0])], [np.array([1, 0, 0, 0])], [np.array([0.707, 0, 0, -0.707])], [np.array([0, 0, 0, -1.0])], [np.array([0.707, 0, 0, -0.707])],  [np.array([-0.707, 0, 0, -0.707])], [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, 1])]],
+  
+
+    # 'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])],[np.array([-0.33, -0.7, -0.23])],[np.array([-0.7, 0.18, -0.23])]],
+    #                     # [np.array([-0.7, -0.7, -0.23])],[np.array([-0.33, -0.05, -0.23])],[np.array([-0.33, -0.05, 0.7])],
+    #                     # [np.array([-0.33, 0.18, 0.7])],[np.array([-0.33, -0.7, 0.7])],[np.array([-0.7, 0.18, 0.7])],
+    #                     # [np.array([-0.7, -0.7, 0.7])],[np.array([-0.7, -0.05, -0.23])],[np.array([-0.7, -0.05, 0.7])]],
+    # 'quat_body_offset': [[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])]],#[np.array([0, 0, 0, 1])],
+    #                     # [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],
+    #                     # [np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])],[np.array([0, 0, 0, 1])]],
 
     # 'pos_body_offset': [[np.array([-0.3, 0, -0.2])]],#, [np.array([-0.1, 0, -0.2])], [np.array([-0.1, 0, -0.2])]],#, [np.array([-1.95, -0.95, 0])]],#,  [np.array([-1.95,  0.95, 0])], [np.array([-1, 1.3, 0])]],
     #                     #[np.array([0, 0.2, 0])], [np.array([-2.3,  0.2, 0])]],
@@ -150,7 +163,8 @@ agent = {
     #                     #[np.array([0, 0, 0, 1])], [np.array([0, 0, 0, -1])]],
     'pos_body_test_offset': [[np.array([-1.113, -1.295, 0])], [np.array([-1.226, -1.280, 0])], [np.array([-1.445, -1.222, 0])]],#, [np.array([-1.3, 1.1, 0])], [np.array([-2.1, 0.5, 0])], [np.array([-1.75,  1.25, 0])]],
     'quat_body_test_offset': [[np.array([0.996, 0, 0, -0.087])], [np.array([0.985, 0, 0, -0.174])], [np.array([0.940, 0, 0, -0.342])]],#, [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, -1])], [np.array([-0.707, 0, 0, -0.707])]],
-    'T': 400, #400,
+    'T': 200, #400,
+    't_end': 100*np.ones(common['conditions']),
     'target_end_effector': 'human_hand',
     'ee_points_tgt': ee_tgts,
     'end_effector_points': EE_POINTS,
@@ -182,7 +196,7 @@ algorithm['init_traj_distr'] = {
     'type': init_lqr,
     'init_gains':  1.0 / Franka_Gains,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
-    'init_var': 120, #0.25 for real robot, #0.5, #1000 for muMuJoCo,
+    'init_var': 1000, #0.25 for real robot, #0.5, #1000 for muMuJoCo,
     'stiffness': 1.0, #3.0-for real robot, #1.0 for MuJoCo,
     'stiffness_vel':0.5, #0.25-for real robot,#0.5 for MuJoCo,
     'dQ': SENSOR_DIMS[ACTION],
@@ -236,10 +250,16 @@ state_cost_close = {
 }
 
 
+# algorithm['cost'] = {
+#     'type': CostSum,
+#     'costs': [torque_cost, fk_cost, joint_velocities_cost],
+#     'weights': [0.0, 1.0, 0.0],
+# }
+
 algorithm['cost'] = {
     'type': CostSum,
-    'costs': [torque_cost, fk_cost, joint_velocities_cost],
-    'weights': [5.0, 1.0, 10000.0],
+    'costs': [fk_cost],
+    'weights': [1.0],
 }
 
 algorithm['dynamics'] = {

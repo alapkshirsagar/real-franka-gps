@@ -54,13 +54,24 @@ class CostFK(Cost):
         #print("Points = ", pt)
         # print("Targets =", tgt)
         if pt.shape[1] == 6:
-            dist = pt[:,0:3]
+            print("Human hand rel pos", pt[:,3:6])
+            dist = pt[:,3:6]
             jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
-            jx = jx_full[:, 0:3, -sample.get(JOINT_ANGLES).shape[1]:]
-        else:
+            jx = jx_full[:, 3:6, -sample.get(JOINT_ANGLES).shape[1]:]
+        elif pt.shape[1] == 9:
             dist = pt[:,6:9] - pt[:,0:3]
             jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
             jx = jx_full[:, 6:9, -sample.get(JOINT_ANGLES).shape[1]:]
+        elif pt.shape[1] == 18:
+            print("Human hand rel pos", pt[:,9:18])
+            dist = pt[:,9:18]
+            jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS)
+            jx = jx_full[:,9:18,-sample.get(JOINT_ANGLES).shape[1]:]
+        else:
+            dist = pt[:,18:27] - pt[:,0:9] #0-8 Correspond to the human hand, 9-17 Correspond to the object, 18-26 Correspond to the robot
+            jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS)
+            #print("jx_full shape=", jx_full.shape)
+            jx = jx_full[:,18:27,-sample.get(JOINT_ANGLES).shape[1]:]
         #print(jx_full.shape)
         #print("jx", jx.shape)
         # print("Points = ",pt[:, 6:9])
