@@ -1,5 +1,6 @@
 #include "gps_agent_pkg/robotplugin.h"
 #include "gps_agent_pkg/trialcontroller.h"
+#include <boost/algorithm/clamp.hpp>
 
 using namespace gps_control;
 
@@ -33,6 +34,10 @@ void TrialController::update(RobotPlugin *plugin, ros::Time current_time,
     publish_obs(obs, plugin);
     // Ask subclass to fill in torques
     get_action(step_counter_, X, obs, torques);
+      for (uint8_t i(0); i < torques.size(); i++)
+    {
+      torques(i) = boost::algorithm::clamp(torques(i), -5, 5);
+    }
      std::cout << "Ŧ: " << torques.transpose() << "\n";
      std::cout << "X: " << X.transpose() << "\n";
 
@@ -102,4 +107,3 @@ void TrialController::update_action_command(int id, const Eigen::VectorXd &comma
 void TrialController::publish_obs(Eigen::VectorXd obs, RobotPlugin *plugin){
 
 }
-

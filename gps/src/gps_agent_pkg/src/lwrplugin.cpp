@@ -11,6 +11,7 @@
 
 #include <string>
 #include <pluginlib/class_list_macros.h>
+#include <boost/algorithm/clamp.hpp>
 
 namespace gps_control
 {
@@ -208,6 +209,7 @@ KUKALWRPlugin::update(const ros::Time& time, const ros::Duration& period)
   //std::cout << active_arm_torques_.transpose() << "\n";
   for (uint8_t i(0); i < joint_handles_.size(); i++)
     {
+      active_arm_torques_(i) = boost::algorithm::clamp(active_arm_torques_(i), -5, 5);
       joint_handles_[i].setCommand(active_arm_torques_(i));
     }
 

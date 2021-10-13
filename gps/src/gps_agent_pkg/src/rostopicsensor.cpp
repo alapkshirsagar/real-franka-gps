@@ -10,7 +10,7 @@ ROSTopicSensor::ROSTopicSensor(ros::NodeHandle& n, RobotPlugin *plugin): Sensor(
 	    topic_name_ = "/caffe_features_publisher";
     // Initialize data vector.
     ROS_INFO("init rostopic sensor, topic is %s", topic_name_.c_str());
-    data_size_ = 9;
+    data_size_ = 6;
     latest_data_.resize(data_size_);
     previous_data_.resize(data_size_);
     difference_data_.resize(data_size_);
