@@ -112,6 +112,7 @@ if not os.path.exists(common['data_files_dir']):
 
 agent = {
     'type': AgentROSControlArm,
+    'data_files_dir': EXP_DIR + 'data_files/',
     'dt': 0.05,
     'conditions': common['conditions'],
     'T': 100,

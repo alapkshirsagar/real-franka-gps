@@ -6,6 +6,7 @@ import tf
 class optitrack_publisher:
     def __init__(self):
         self.pub = rospy.Publisher('/mocap_optitrack_data_topic', Float64MultiArray,queue_size = 200)
+        self.trial_subscriber = rospy.Subscriber('/gps_controller_trial_command', update_conditions_callback)
         rospy.set_param("feat_topic", "/mocap_optitrack_data_topic" )    
         self.tf_listener = tf.TransformListener()
         r = rospy.Rate(100) # 100hz
@@ -13,6 +14,10 @@ class optitrack_publisher:
             self.publish_optitrack_data()
             r.sleep()
 
+
+    def update_conditions_callback(self, msg):
+        print("Condition:", msg.condition)
+        print("Sample:", msg.sample)
 
     def publish_optitrack_data(self):
         try:

@@ -229,6 +229,8 @@ class AgentROSControlArm(Agent):
         trial_command.state_datatypes = self._hyperparams['state_include']
         trial_command.obs_datatypes = self._hyperparams['state_include']
         # import pdb; pdb.set_trace()
+        distance_data_file = open(self._hyperparams['data_files_dir']+'distance_data.txt', 'a')
+
         if self.use_tf is False:
             sample_msg = self._trial_service.publish_and_wait(
                 trial_command, timeout=self._hyperparams['trial_timeout']
@@ -236,6 +238,12 @@ class AgentROSControlArm(Agent):
             sample = msg_to_sample(sample_msg, self)
             if save:
                 self._samples[condition].append(sample)
+            # import pdb; pdb.set_trace()
+            for i in range(0,trial_command.T):
+                error = np.linalg.norm(sample.get_X(i)[14:17])
+                distance_data_file.write("%s," % error)
+            distance_data_file.write('\n')
+            distance_data_file.close()
             return sample
         else:
             self._trial_service.publish(trial_command)
@@ -244,6 +252,12 @@ class AgentROSControlArm(Agent):
             sample = msg_to_sample(sample_msg, self)
             if save:
                 self._samples[condition].append(sample)
+            # import pdb; pdb.set_trace()
+            for i in range(0,trial_command.T):
+                error = np.linalg.norm(sample.get_X(i)[14:17])
+                distance_data_file.write("%s," % error)
+            distance_data_file.write('\n')
+            distance_data_file.close()
             return sample
 
     def run_trial_tf(self, policy, time_to_run=5):
