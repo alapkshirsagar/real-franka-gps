@@ -184,7 +184,7 @@ class GPSMain(object):
                     (itr, cond, i)
                 )
                 self.agent.sample(
-                    pol, cond, itr,
+                    pol, cond, itr, i,
                     verbose=(i < self._hyperparams['verbose_trials'])
                 )
 
@@ -196,7 +196,7 @@ class GPSMain(object):
                     redo = False
         else:
             self.agent.sample(
-                pol, cond, itr,
+                pol, cond, itr, i,
                 verbose=(i < self._hyperparams['verbose_trials'])
             )
 
@@ -234,7 +234,7 @@ class GPSMain(object):
         # TODO: Take at all conditions for GUI?
         for cond in range(len(self._test_idx)):
             pol_samples[cond][0] = self.agent.sample(
-                self.algorithm.policy_opt.policy, self._test_idx[cond], itr,
+                self.algorithm.policy_opt.policy, self._test_idx[cond], itr, 100,
                 verbose=verbose, save=False, noisy=False)
         return [SampleList(samples) for samples in pol_samples]
 

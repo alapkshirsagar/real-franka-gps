@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 import rospy
+import roslib
 from std_msgs.msg import Float64MultiArray, MultiArrayDimension
+roslib.load_manifest('gps_agent_pkg')
+from gps_agent_pkg.msg import TrialCommand
 import tf
 
 class optitrack_publisher:
     def __init__(self):
         self.pub = rospy.Publisher('/mocap_optitrack_data_topic', Float64MultiArray,queue_size = 200)
-        self.trial_subscriber = rospy.Subscriber('/gps_controller_trial_command', update_conditions_callback)
+        self.trial_subscriber = rospy.Subscriber('/gps_controller_trial_command', TrialCommand, self.update_conditions_callback)
         rospy.set_param("feat_topic", "/mocap_optitrack_data_topic" )    
         self.tf_listener = tf.TransformListener()
         r = rospy.Rate(100) # 100hz
@@ -16,6 +19,7 @@ class optitrack_publisher:
 
 
     def update_conditions_callback(self, msg):
+        print("Iteration:", msg.iteration)
         print("Condition:", msg.condition)
         print("Sample:", msg.sample)
 

@@ -192,12 +192,13 @@ class AgentROSControlArm(Agent):
                        condition_data[TRIAL_ARM]['data'])
         time.sleep(2.0) # Allows a physical robot to come to a full stop.
 
-    def sample(self, policy, condition, iteration, verbose=True, save=True, noisy=True):
+    def sample(self, policy, condition, iteration, sample, verbose=True, save=True, noisy=True):
         """
         Reset and execute a policy and collect a (compound) sample.
         Args:
             policy: A Policy object.
             condition: Which condition to run towards.
+            sample: Sample number
             verbose: Unused (as per agent_ros).
             save: Whether or not to save the trial into the samples.
             noisy: Whether or not to use noise during sampling.
@@ -228,6 +229,9 @@ class AgentROSControlArm(Agent):
                 self._hyperparams['ee_points_tgt'][condition].tolist()
         trial_command.state_datatypes = self._hyperparams['state_include']
         trial_command.obs_datatypes = self._hyperparams['state_include']
+        trial_command.iteration = iteration
+        trial_command.condition = condition
+        trial_command.sample = sample
         # import pdb; pdb.set_trace()
         distance_data_file = open(self._hyperparams['data_files_dir']+'distance_data.txt', 'a')
 
