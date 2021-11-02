@@ -82,17 +82,16 @@ class AgentROSControlArm(Agent):
         #         self._hyperparams[field] = setup(self._hyperparams[field], \
         #                                         conditions)
         # else:
+        if len(self._hyperparams['x0']) != 32:
+            # import pdb; pdb.set_trace()
+            self.x0 = np.concatenate([self._hyperparams['x0'], eepts_notgt, np.zeros_like(eepts_notgt)])
+            self._hyperparams['x0'] = self.x0
+        else:
+            self.x0 = self._hyperparams['x0']
         for field in ('x0', 'ee_points_tgt', 'reset_conditions'):
             self._hyperparams[field] = setup(self._hyperparams[field], \
                                             conditions)
-        if len(self._hyperparams['x0'][0]) != 32:
-            # import pdb; pdb.set_trace()
-            self.x0.append(
-                        np.concatenate([self._hyperparams['x0'][0], eepts_notgt, np.zeros_like(eepts_notgt)])
-                    )
-        else:
-            self.x0 = self._hyperparams['x0']
-
+        # import pdb; pdb.set_trace()
         self.use_tf = False
         self.observations_stale = True
 

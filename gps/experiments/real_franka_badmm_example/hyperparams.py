@@ -66,7 +66,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 1,
+    'conditions': 8,
 }
 
 # TODO(chelsea/zoe) : Move this code to a utility function
@@ -117,6 +117,7 @@ agent = {
     'conditions': common['conditions'],
     'T': 100,
     'target_end_effector': 'human_hand',
+    # 'x0': x0s,
     'x0': np.concatenate([np.array([-0.06858,0.70147,0.08587,-2.119857,-0.049951,2.9128,0.7915173]),
                           np.zeros(7)]),
     'ee_points_tgt': ee_tgts,
@@ -154,7 +155,8 @@ algorithm['init_traj_distr'] = {
     'init_var': 0.5, #0.25,#1.0, # Kinda
     'stiffness': 1.0, #3,
     'stiffness_vel': 0.5, #0.25,
-    'final_weight': 50,
+    # 'final_weight': 50,
+    'dQ': SENSOR_DIMS[ACTION],
     'dt': agent['dt'],
     'T': agent['T'],
 }
@@ -244,7 +246,7 @@ config = {
     'iterations': algorithm['iterations'],
     'common': common,
     'verbose_trials': 1,
-    'verbose_policy_trials': 1,
+    'verbose_policy_trials': 0,
     'agent': agent,
     'gui_on': False,
     'algorithm': algorithm,

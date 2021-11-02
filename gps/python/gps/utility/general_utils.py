@@ -75,8 +75,18 @@ def extract_condition(hyperparams, m):
     Pull the relevant hyperparameters corresponding to the specified
     condition, and return a new hyperparameter dictionary.
     """
-    return {var: val[m] if isinstance(val, list) else val
-            for var, val in hyperparams.items()}
+    # return {var: val[m] if isinstance(val, list) else val
+    #         for var, val in hyperparams.items()}
+    condition_dictionary = {}
+    for var, val in hyperparams.items():
+        print(var)
+        print(val)
+        if isinstance(val, list):
+            condition_dictionary[var] = val[m]
+        else:
+            condition_dictionary[var] = val
+    return condition_dictionary
+
 
 
 def get_ee_points(offsets, ee_pos, ee_rot):

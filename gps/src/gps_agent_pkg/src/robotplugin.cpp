@@ -304,6 +304,8 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
 {
   ROS_INFO_STREAM("Publishing sample report");
   while (!report_publisher_->trylock());
+  ROS_INFO_STREAM("Locked publisher");
+
   std::vector<gps::SampleType> dtypes;
   sample->get_available_dtypes(dtypes);
 
@@ -314,6 +316,8 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
       Eigen::VectorXd tmp_data;
       sample->get_data(T, tmp_data, (gps::SampleType)dtypes[d]);
       report_publisher_->msg_.sensor_data[d].data.resize(tmp_data.size());
+
+      ROS_INFO_STREAM("Received data");
 
 
       std::vector<int> shape;
@@ -336,7 +340,10 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
           report_publisher_->msg_.sensor_data[d].data[i] = tmp_data[i];
         }
     }
+  ROS_INFO_STREAM("Unlocking and publishing sample report");
   report_publisher_->unlockAndPublish();
+  ROS_INFO_STREAM("Published sample report");
+
 }
 
 void RobotPlugin::position_subscriber_callback(const

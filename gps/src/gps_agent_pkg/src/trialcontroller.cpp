@@ -38,8 +38,8 @@ void TrialController::update(RobotPlugin *plugin, ros::Time current_time,
     {
       torques(i) = boost::algorithm::clamp(torques(i), -3, 3);
     }
-     std::cout << "Ŧ: " << torques.transpose() << "\n";
-     std::cout << "X: " << X.transpose() << "\n";
+    //  std::cout << "Ŧ: " << torques.transpose() << "\n";
+    //  std::cout << "X: " << X.transpose() << "\n";
 
     // Set the torques for the sample
     sample->set_data(step_counter_,
