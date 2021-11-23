@@ -1,5 +1,5 @@
 <mujocoinclude>
-	<compiler  angle="radian" meshdir="meshes/" settotalmass="18.5" />  
+	<compiler  angle="radian" meshdir="meshes/" settotalmass="1.85" />  
 
     <asset>
         <mesh name="link0_col" file="collision/link0.stl"/>
@@ -37,10 +37,10 @@
                 <geom contype="1" conaffinity="1" group="3" type="mesh" rgba=".5 .6 .7 1"/>
             </default>
             <default class="panda_arm">
-                <joint damping="50"/>
+                <joint damping="10"/>
             </default>
              <default class="panda_forearm">
-                <joint damping="50"/>
+                <joint damping="10"/>
             </default>
              <default class="panda_finger">
                 <joint damping="1000"/>

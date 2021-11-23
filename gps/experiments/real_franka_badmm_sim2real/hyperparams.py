@@ -34,9 +34,9 @@ from gps.gui.target_setup_gui import load_pose_from_npz
 from gps.utility.general_utils import get_ee_points
 
 ALGORITHM_NN_LIBRARY = "caffe"
-# EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
-#                       [0.22, 0.05, 0.5]])
-EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55]])
+EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55],
+                      [0.22, 0.05, 0.5]])
+# EE_POINTS = np.array([[0.22, -0.025, 0.55], [0.22, -0.025, -0.55]])
 
 x0s = []
 ee_tgts = []
@@ -45,18 +45,18 @@ reset_conditions = []
 SENSOR_DIMS = {
     JOINT_ANGLES: 7, #9 for robot, 4 for human hand
     JOINT_VELOCITIES: 7,
-    END_EFFECTOR_POINTS: 6, #3 for robot, 3 for human, 3 for object
-    END_EFFECTOR_POINT_VELOCITIES: 6,
+    END_EFFECTOR_POINTS: 9, #3 for robot, 3 for human, 3 for object
+    END_EFFECTOR_POINT_VELOCITIES: 9,
     ACTION: 7,
 }
 
-Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1])
+# Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1])
 # Franka_Gains = np.array([24, 12, 10, 7, 1, 1, 1])
 # Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.001, 0.001, 0.001])
-# Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.01, 0.01, 0.01])
+Franka_Gains = np.array([0.1, 0.01,0.1, 0.01, 0.01, 0.01, 0.01])
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
-#EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
-EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
+EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
+# EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
 
 common = {
     'experiment_name': 'my_experiment' + '_' + \
@@ -82,7 +82,8 @@ for i in xrange(common['conditions']):
     x0 = np.zeros(7+7+6*EE_POINTS.shape[0])
     # x0[:7] = [0,0.5,0,-0.5,0, 0.5,0]
     # x0[:7] = [-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]
-    x0[:7] = [1.14, 0, -1.2, -2, 0, 3.8, 1.8]
+    # x0[:7] = [1.14, 0, -1.2, -2, 0, 3.8, 1.8]
+    x0[:7] = -0.06858,0.70147,0.08587,-2.119857,-0.049951,2.9128,0.7915173
     # x0[14:(14+3*EE_POINTS.shape[0])] = np.ndarray.flatten(
     #     get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
     # )
@@ -114,10 +115,10 @@ agent = {
     'filename': './mjc_models/franka-torque-control-h2r-human-simulate/franka_panda.xml',
     'data_files_dir': EXP_DIR + 'data_files/',
     #'filename': './mjc_models/pr2_arm3d.xml',
-    'x0': np.concatenate([np.array([0, 0, -1.2, -2, 0, 3.8, 1.8]),
-                          np.zeros(7)]), #These values correspond to the joint angles and velocities
+    'x0': np.concatenate([np.array([-0.06858,0.70147,0.08587,-2.119857,-0.049951,2.9128,0.7915173]),
+                          np.zeros(7)]),
     # 'x0': x0s,
-    'x0_mujoco': np.concatenate([np.array([1.2,0,0,0, 1.14, 0, -1.2, -2, 0, 3.8, 1.8]),
+    'x0_mujoco': np.concatenate([np.array([1.2,0,0,0, -0.06858,0.70147,0.08587,-2.119857,-0.049951,2.9128,0.79151738]),
                           np.zeros(11)]), #These values correspond to the joint angles and velocities
     # 'x0': np.concatenate([np.array([-0.000159,-0.783775,0.000139,-2.356250,0.000304,1.570931,0.784746]),
     #                       np.zeros(7)]), #These values correspond to the joint angles and velocities
@@ -129,7 +130,7 @@ agent = {
     'random_simulate_human': False,
     'test': False,
     'human_ik': True,
-    'reduced': 'Only7JointsRelativeEEF',#Only7Joints, FullState, NoHumanJoints, RelativeEEF
+    'reduced': 'Only7Joints',#Only7Joints, FullState, NoHumanJoints, RelativeEEF, Only7JointsRelativeEEF
     'pre_timesteps': 1, #1+number of past timesteps to include
     'dt': 0.05,#0.05
     'substeps': 5,
@@ -139,9 +140,9 @@ agent = {
     # 'pos_body_offset': [[np.array([-0.33, 0.18, -0.23])]],
     # 'quat_body_offset': [[np.array([0, 0, 0, 1])]],
 
-    'pos_human': [np.array([r*np.cos(theta*np.pi/180),r*np.sin(theta*np.pi/180),z]) for r in np.linspace(0.6, 0.9, num = 2)
+    'pos_human': [np.array([r*np.cos(theta*np.pi/180),r*np.sin(theta*np.pi/180),z]) for r in np.linspace(0.4, 0.6, num = 2)
                         for theta in np.linspace(0, 90, num = 2)
-                            for z in np.linspace(0.9, 1.2, num = 2)],
+                            for z in np.linspace(0.9, 1.1, num = 2)],
     'quat_body_offset': [[np.array([1, 0, 0, 0])], [np.array([1, 0, 0, 0])], [np.array([0.707, 0, 0, -0.707])], [np.array([0, 0, 0, -1.0])], [np.array([0.707, 0, 0, -0.707])],  [np.array([-0.707, 0, 0, -0.707])], [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, 1])]],
   
 
@@ -163,7 +164,7 @@ agent = {
     #                     #[np.array([0, 0, 0, 1])], [np.array([0, 0, 0, -1])]],
     'pos_body_test_offset': [[np.array([-1.113, -1.295, 0])], [np.array([-1.226, -1.280, 0])], [np.array([-1.445, -1.222, 0])]],#, [np.array([-1.3, 1.1, 0])], [np.array([-2.1, 0.5, 0])], [np.array([-1.75,  1.25, 0])]],
     'quat_body_test_offset': [[np.array([0.996, 0, 0, -0.087])], [np.array([0.985, 0, 0, -0.174])], [np.array([0.940, 0, 0, -0.342])]],#, [np.array([-1, 0, 0, 0])], [np.array([0, 0, 0, -1])], [np.array([-0.707, 0, 0, -0.707])]],
-    'T': 200, #400,
+    'T': 400, #400,
     't_end': 100*np.ones(common['conditions']),
     'target_end_effector': 'human_hand',
     'ee_points_tgt': ee_tgts,
@@ -299,7 +300,7 @@ algorithm['policy_prior'] = {
     'type': PolicyPriorGMM,
     'max_clusters': 20,
     'min_samples_per_cluster': 40,
-    'max_samples': 20,
+    'max_samples': 40,
 }
 
 config = {
@@ -309,7 +310,7 @@ config = {
     'verbose_policy_trials': 1,
     'common': common,
     'agent': agent,
-    'gui_on': False,
+    'gui_on': True,
     'algorithm': algorithm,
 }
 

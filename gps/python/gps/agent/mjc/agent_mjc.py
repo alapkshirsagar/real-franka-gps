@@ -76,10 +76,10 @@ class AgentMuJoCo(Agent):
                     [theta0, theta1, theta2] = self.inverse_kinematics_3dof(1.2, 0.3, 0.3, 1, self._hyperparams['pos_human_test'][i][0], self._hyperparams['pos_human_test'][i][1], self._hyperparams['pos_human_test'][i][2])
                 else:
                     [theta0, theta1, theta2] = self.inverse_kinematics_3dof(1.2, 0.3, 0.3, 1, self._hyperparams['pos_human'][i][0], self._hyperparams['pos_human'][i][1], self._hyperparams['pos_human'][i][2])
-                # print([theta0, theta1, theta2])
+                print("Human joint angles", [theta0, theta1, theta2])
                 for j in range(len(self._hyperparams['pos_body_idx'][i])):
                     idx = self._hyperparams['pos_body_idx'][i][j]
-                    self._model[i]['body_pos'][idx, :] = [1*np.cos(theta0), 1*np.sin(theta0), 0]
+                    self._model[i]['body_pos'][idx, :] = [0.8*np.cos(theta0), 0.8*np.sin(theta0), 0.0]
                     if 'quat_body_offset' in self._hyperparams:
                         self._model[i]['body_quat'][idx, :] = [np.cos((np.pi+theta0)/2),0,0,np.sin((np.pi+theta0)/2)]
                 self.shoulder_end.append(theta1)
@@ -177,7 +177,7 @@ class AgentMuJoCo(Agent):
                                        cam_pos[0], cam_pos[1], cam_pos[2],
                                        cam_pos[3], cam_pos[4], cam_pos[5])
 
-    def sample(self, policy, condition, iteration, verbose=True, save=True, noisy=True):
+    def sample(self, policy, condition, iteration, sample_number, verbose=True, save=True, noisy=True):
         """
         Runs a trial and constructs a new sample containing information
         about the trial.
@@ -254,6 +254,8 @@ class AgentMuJoCo(Agent):
             obs_t = new_sample.get_obs(t=t)
             #mj_U = policy.act(X_t, obs_t, t, noise[t, :])
             mj_U = np.concatenate((policy.act(X_t, obs_t, t, noise[t, :]),np.zeros(self._model[condition]['nu'] - self.nMotors)))
+            for joint in range(self.nMotors):
+                mj_U[joint] = max(-3.0, min(mj_U[joint], 3.0))
             # print("Mujoco state", X_t)
             print("Mujoco control input", mj_U)
             if self._hyperparams['simulate_human']:
@@ -389,7 +391,7 @@ class AgentMuJoCo(Agent):
             jac = np.zeros([eepts_rel.shape[0], self._model[condition]['nv']])
             for site in range(0,2):
                 idx = site * 3
-                jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(6)
+                jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(2)
             sample.set(END_EFFECTOR_POINT_JACOBIANS, np.tile(jac, self._hyperparams['pre_timesteps']), t=0)
         elif self._hyperparams['reduced'] == "RelativeEEF":
             sample.set(JOINT_ANGLES, data['qpos'][4:].flatten(), t=0)
@@ -486,7 +488,7 @@ class AgentMuJoCo(Agent):
             jac = np.zeros([cur_eepts_rel.shape[0], self._model[condition]['nv']])
             for site in range(0,sites-sites/3):
                 idx = site * 3
-                jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(6)
+                jac[idx:(idx+3), :] = self._world[condition].get_jac_site(site)- self._world[condition].get_jac_site(sites-sites/3)
             sample.set(END_EFFECTOR_POINT_JACOBIANS, jac, t=t+1)
         else:
             cur_eepts = self._data['site_xpos'].flatten()

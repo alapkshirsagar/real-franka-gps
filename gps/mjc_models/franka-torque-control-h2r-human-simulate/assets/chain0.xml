@@ -1,5 +1,5 @@
 <mujocoinclude>
-	<body name="panda0_link0" childclass="panda" pos="0 0 0.7" >
+	<body name="panda0_link0" childclass="panda" pos="-0.2 -0.1 0.7" >
         <geom class="panda_viz" mesh="link0_viz"/>
         <geom class="panda_col" mesh="link0_col"/>
         <body name="panda0_link1" pos="0 0 0.333">
