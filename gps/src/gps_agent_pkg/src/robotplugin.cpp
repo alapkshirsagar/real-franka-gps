@@ -72,9 +72,10 @@ void RobotPlugin::initialize_ros(ros::NodeHandle& n)
                                          &RobotPlugin::data_request_subscriber_callback, this);
   
   // Create publishers.
-  report_publisher_.reset(new
-                          realtime_tools::RealtimePublisher<gps_agent_pkg::SampleResult>(n,
-                              "/gps_controller_report", 1));
+  // report_publisher_.reset(new
+  //                         realtime_tools::RealtimePublisher<gps_agent_pkg::SampleResult>(n,
+  //                             "/gps_controller_report", 1));
+  report_publisher_ = n.advertise<gps_agent_pkg::SampleResult>("/gps_controller_report",1);
 
   //for async tf controller.
   action_subscriber_tf_ = n.subscribe("/gps_controller_sent_robot_action_tf", 1,
@@ -303,19 +304,17 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
                                         int T /*=1*/)
 {
   ROS_INFO_STREAM("Publishing sample report");
-  while (!report_publisher_->trylock());
-  ROS_INFO_STREAM("Locked publisher");
 
   std::vector<gps::SampleType> dtypes;
   sample->get_available_dtypes(dtypes);
 
-  report_publisher_->msg_.sensor_data.resize(dtypes.size());
+  sample_result_message_.sensor_data.resize(dtypes.size());
   for (int d = 0; d < dtypes.size(); d++) //Fill in each sample type
     {
-      report_publisher_->msg_.sensor_data[d].data_type = dtypes[d];
+      sample_result_message_.sensor_data[d].data_type = dtypes[d];
       Eigen::VectorXd tmp_data;
       sample->get_data(T, tmp_data, (gps::SampleType)dtypes[d]);
-      report_publisher_->msg_.sensor_data[d].data.resize(tmp_data.size());
+      sample_result_message_.sensor_data[d].data.resize(tmp_data.size());
 
       ROS_INFO_STREAM("Received data");
 
@@ -323,11 +322,11 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
       std::vector<int> shape;
       sample->get_shape((gps::SampleType)dtypes[d], shape);
       shape.insert(shape.begin(), T);
-      report_publisher_->msg_.sensor_data[d].shape.resize(shape.size());
+      sample_result_message_.sensor_data[d].shape.resize(shape.size());
       int total_expected_shape = 1;
       for (int i = 0; i < shape.size(); i++)
         {
-          report_publisher_->msg_.sensor_data[d].shape[i] = shape[i];
+          sample_result_message_.sensor_data[d].shape[i] = shape[i];
           total_expected_shape *= shape[i];
         }
       if (total_expected_shape != tmp_data.size())
@@ -337,14 +336,61 @@ void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
         }
       for (int i = 0; i < tmp_data.size(); i++)
         {
-          report_publisher_->msg_.sensor_data[d].data[i] = tmp_data[i];
+          sample_result_message_.sensor_data[d].data[i] = tmp_data[i];
         }
     }
   ROS_INFO_STREAM("Unlocking and publishing sample report");
-  report_publisher_->unlockAndPublish();
+  report_publisher_.publish(sample_result_message_);
   ROS_INFO_STREAM("Published sample report");
 
 }
+
+// void RobotPlugin::publish_sample_report(boost::scoped_ptr<Sample>& sample,
+//                                         int T /*=1*/)
+// {
+//   ROS_INFO_STREAM("Publishing sample report");
+//   while (!report_publisher_->trylock());
+//   ROS_INFO_STREAM("Locked publisher");
+
+//   std::vector<gps::SampleType> dtypes;
+//   sample->get_available_dtypes(dtypes);
+
+//   report_publisher_->msg_.sensor_data.resize(dtypes.size());
+//   for (int d = 0; d < dtypes.size(); d++) //Fill in each sample type
+//     {
+//       report_publisher_->msg_.sensor_data[d].data_type = dtypes[d];
+//       Eigen::VectorXd tmp_data;
+//       sample->get_data(T, tmp_data, (gps::SampleType)dtypes[d]);
+//       report_publisher_->msg_.sensor_data[d].data.resize(tmp_data.size());
+
+//       ROS_INFO_STREAM("Received data");
+
+
+//       std::vector<int> shape;
+//       sample->get_shape((gps::SampleType)dtypes[d], shape);
+//       shape.insert(shape.begin(), T);
+//       report_publisher_->msg_.sensor_data[d].shape.resize(shape.size());
+//       int total_expected_shape = 1;
+//       for (int i = 0; i < shape.size(); i++)
+//         {
+//           report_publisher_->msg_.sensor_data[d].shape[i] = shape[i];
+//           total_expected_shape *= shape[i];
+//         }
+//       if (total_expected_shape != tmp_data.size())
+//         {
+//           ROS_ERROR("Data stored in sample has different length than expected (%d vs %d)",
+//                     tmp_data.size(), total_expected_shape);
+//         }
+//       for (int i = 0; i < tmp_data.size(); i++)
+//         {
+//           report_publisher_->msg_.sensor_data[d].data[i] = tmp_data[i];
+//         }
+//     }
+//   ROS_INFO_STREAM("Unlocking and publishing sample report");
+//   report_publisher_->unlockAndPublish();
+//   ROS_INFO_STREAM("Published sample report");
+
+// }
 
 void RobotPlugin::position_subscriber_callback(const
     gps_agent_pkg::PositionCommand::ConstPtr& msg)

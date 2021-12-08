@@ -2,6 +2,7 @@
 #include "gps_agent_pkg/trialcontroller.h"
 #include <boost/algorithm/clamp.hpp>
 
+
 using namespace gps_control;
 
 // Constructor.

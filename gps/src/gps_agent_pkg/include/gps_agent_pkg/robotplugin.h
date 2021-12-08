@@ -93,7 +93,9 @@ protected:
   ros::Subscriber data_request_subscriber_;
   // Publishers.
   // Publish result of a trial, completion of position command, or just a report.
-  ros_publisher_ptr(gps_agent_pkg::SampleResult) report_publisher_;
+  // ros_publisher_ptr(gps_agent_pkg::SampleResult) report_publisher_;
+  ros::Publisher report_publisher_;
+  gps_agent_pkg::SampleResult sample_result_message_;
   // Is a trial arm data request pending?
   bool trial_data_request_waiting_;
   // Is a auxiliary data request pending?
