@@ -57,7 +57,7 @@ FRANKA_GAINS = np.array([0.1, 0.1, 0.1, 0.1, 0.001, 0.001, 0.001]) # [24, 12, 10
 
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
 # EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_example/'
-EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_example/'
+EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_example_12/'
 
 x0s = []
 ee_tgts = []
@@ -70,7 +70,7 @@ common = {
     'data_files_dir': EXP_DIR + 'data_files/',
     'target_filename': EXP_DIR + 'target.npz',
     'log_filename': EXP_DIR + 'log.txt',
-    'conditions': 8,
+    'conditions': 12,
 }
 
 # TODO(chelsea/zoe) : Move this code to a utility function

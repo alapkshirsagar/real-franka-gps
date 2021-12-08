@@ -14,22 +14,36 @@ class optitrack_publisher:
         self.trial_subscriber = rospy.Subscriber('/gps_controller_trial_command', TrialCommand, self.update_conditions_callback)
         rospy.set_param("feat_topic", "/mocap_optitrack_data_topic" )    
         self.tf_listener = tf.TransformListener()
+        # self.human_data_file = open('/home/franka2/Kuka_Franka_GPS/src/real-franka-gps/gps/src/gps_agent_pkg/scripts/hand_data_train.csv')
+        self.human_data_file = open('/home/franka2/Kuka_Franka_GPS/src/real-franka-gps/gps/src/gps_agent_pkg/scripts/hand_data_test.csv')
+        csvreader = csv.reader(self.human_data_file)    
+        nTrajectoriesRecorded = 18 #Number of trajectories recorded, 4 or 18 depending on train or test
+        nTrajectoriesDesired = 90 #Number of trajectories desired, 8/12 or 90 depending on train with 8/12 or test
 
-        # self.trans_human = [0.632822275162,-0.0804761648178,0.374321460724]
-        #For training
-        self.trans_human_total = [np.array([r*np.cos(theta*np.pi/180),r*np.sin(theta*np.pi/180),z]) for r in np.linspace(0.70, 0.80, num = 2)
-                        for theta in np.linspace(0, 45, num = 2)
-                            for z in np.linspace(0.2, 0.25, num = 2)]
-        print(self.trans_human_total)
-        
+        trajectory_human = np.zeros((nTrajectoriesRecorded*100,3))
+        trajectory_rotated = np.zeros((nTrajectoriesDesired*100,3)) #this includes all the trajectories of 100 timesteps each
+        theta = np.linspace(0,np.pi/4,num = nTrajectoriesDesired/nTrajectoriesRecorded, endpoint = True, dtype = float)
+        # print(range(len(theta)))
+        row_number = 0
+        for row in csvreader:
+            # for column_number in range(3):
+            trajectory_human[row_number, 0] = float(row[2])
+            trajectory_human[row_number, 1] = float(row[0])
+            trajectory_human[row_number, 2] = float(row[1])
 
-        #For testing
-        # self.trans_human_total = [np.array([r*np.cos(theta*np.pi/180),r*np.sin(theta*np.pi/180),z]) for r in np.linspace(0.70, 0.80, num = 3)
-        #         for theta in np.linspace(0, 45, num = 10)
-        #             for z in np.linspace(0.2, 0.25, num = 3)]
+            radius = (trajectory_human[row_number, 0]**2+trajectory_human[row_number, 1]**2)**0.5
+            for angle in range(len(theta)):
+                trajectory_rotated[angle*nTrajectoriesRecorded*100+row_number, :] = [radius*np.cos(theta[angle]), radius*np.sin(theta[angle]), float(row[1])]
+            row_number+=1
+        self.trans_human_total = []
+
+        for i in range(nTrajectoriesDesired):
+            self.trans_human_total.append(trajectory_rotated[i*100:(i+1)*100, :])
+            print(trajectory_rotated[(i+1)*100-1,:])
 
         self.trans_human = self.trans_human_total[0]
         looprate = rospy.Rate(100) # 100hz
+        self.timestep = -1 #timestep for each sample, -1 means trial not running
         while not rospy.is_shutdown():
             self.publish_optitrack_data()
             looprate.sleep()
@@ -39,9 +53,9 @@ class optitrack_publisher:
         print("Iteration:", msg.iteration)
         print("Condition:", msg.condition)
         print("Sample:", msg.sample)
+
         self.trans_human = self.trans_human_total[msg.condition]
-
-
+        self.timestep = 0
 
 
 
@@ -57,9 +71,14 @@ class optitrack_publisher:
             # (trans_human_orig, rot_human) = self.tf_listener.lookupTransform("optitrack_origin", "human_hand", rospy.Time(0))
             trans_human=[0,0,0]
             # print(trans_robot)
-            trans_human[0] = self.trans_human[0] - trans_robot[0]    #for RELATIVE-fix targets
-            trans_human[1] = self.trans_human[1] - trans_robot[1]    #for RELATIVE-fix targets
-            trans_human[2] = self.trans_human[2] - trans_robot[2]    #for RELATIVE-fix targets
+            # print(self.trans_human[self.timestep,0])
+            if self.timestep is not -1:
+                trans_human[0] = self.trans_human[self.timestep, 0] - trans_robot[0]    #for RELATIVE-moving targets
+                trans_human[1] = self.trans_human[self.timestep, 1] - trans_robot[1]    #for RELATIVE-moving targets
+                trans_human[2] = self.trans_human[self.timestep, 2] - trans_robot[2]    #for RELATIVE-moving targets
+            # trans_human[0] = self.trans_human[0] - trans_robot[0]    #for RELATIVE-fix targets
+            # trans_human[1] = self.trans_human[1] - trans_robot[1]    #for RELATIVE-fix targets
+            # trans_human[2] = self.trans_human[2] - trans_robot[2]    #for RELATIVE-fix targets
             # print("Human position =", trans_human)
             # print("Robot position =", trans_robot)
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
@@ -80,7 +99,12 @@ class optitrack_publisher:
         # print(optitrack_data)
         #publish to rostopicsensor
         self.pub.publish(optitrack_data)
-
+        if self.timestep == 99:
+            self.timestep = 99
+        elif self.timestep == -1:
+            self.timestep = -1
+        else:
+            self.timestep+=1
 
 
 if __name__ == '__main__':

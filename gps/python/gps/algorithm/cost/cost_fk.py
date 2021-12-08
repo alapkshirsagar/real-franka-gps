@@ -54,16 +54,21 @@ class CostFK(Cost):
         #print("Points = ", pt)
         # print("Targets =", tgt)
         if pt.shape[1] == 6:
-            print("Human hand rel pos", pt[:,3:6])
+            print("Human hand rel pos", pt[0,3:6])
             dist = pt[:,3:6]
             jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
-            jx = jx_full[:, 3:6, -sample.get(JOINT_ANGLES).shape[1]:]
+            # import pdb; pdb.set_trace();
+            jx = -jx_full[:, 0:3, -sample.get(JOINT_ANGLES).shape[1]:]
         elif pt.shape[1] == 9:
             dist = pt[:,6:9] - pt[:,0:3]
             jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS) #for mujoco
             jx = jx_full[:, 6:9, -sample.get(JOINT_ANGLES).shape[1]:]
+            print("Jacobian =", jx[0,:,:])
+            print("Initial robot position =", pt[0,6:9])
+            print("Indial human position =", pt[0,0:3])
+
         elif pt.shape[1] == 18:
-            print("Human hand rel pos", pt[:,9:18])
+            print("Human hand rel pos", pt[0,9:18])
             dist = pt[:,9:18]
             jx_full = sample.get(END_EFFECTOR_POINT_JACOBIANS)
             jx = jx_full[:,9:18,-sample.get(JOINT_ANGLES).shape[1]:]

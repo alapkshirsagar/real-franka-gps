@@ -106,4 +106,5 @@ MuJoCo to RealRobot - to change in hyperparams: 1. agent type 2. conditions 3. i
 
 cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/pascal/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/pascal/caffe/build/lib
 
+cd gps/src/gps_agent_pkg/
 source ../../../../../devel/setup.bash

@@ -76,7 +76,8 @@ class AgentROSControlArm(Agent):
                 print 'Could not find transform'
             r.sleep()
 
-        eepts_notgt = np.concatenate([trans_human, trans_human])
+        # eepts_notgt = np.concatenate([trans_human, trans_human, trans_robot])
+        eepts_notgt = np.concatenate([trans_robot, trans_human]) #for relative
         # if self._hyperparams['target_end_effector'] == 'human_hand':
         #     for field in ['x0']:
         #         self._hyperparams[field] = setup(self._hyperparams[field], \
@@ -242,11 +243,11 @@ class AgentROSControlArm(Agent):
             if save:
                 self._samples[condition].append(sample)
             # import pdb; pdb.set_trace()
-            for i in range(0,trial_command.T):
-                error = np.linalg.norm(sample.get_X(i)[14:17])
-                distance_data_file.write("%s," % error)
-            distance_data_file.write('\n')
-            distance_data_file.close()
+            # for i in range(0,trial_command.T):
+            #     error = np.linalg.norm(sample.get_X(i)[14:17])
+            #     distance_data_file.write("%s," % error)
+            # distance_data_file.write('\n')
+            # distance_data_file.close()
             return sample
         else:
             self._trial_service.publish(trial_command)
@@ -256,11 +257,11 @@ class AgentROSControlArm(Agent):
             if save:
                 self._samples[condition].append(sample)
             # import pdb; pdb.set_trace()
-            for i in range(0,trial_command.T):
-                error = np.linalg.norm(sample.get_X(i)[14:17])
-                distance_data_file.write("%s," % error)
-            distance_data_file.write('\n')
-            distance_data_file.close()
+            # for i in range(0,trial_command.T):
+            #     error = np.linalg.norm(sample.get_X(i)[14:17])
+            #     distance_data_file.write("%s," % error)
+            # distance_data_file.write('\n')
+            # distance_data_file.close()
             return sample
 
     def run_trial_tf(self, policy, time_to_run=5):
