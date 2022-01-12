@@ -11,11 +11,9 @@ This repository contains three sub-repositories.
 Jack White's modifications : Unlike the demonstration ROS controller for the PR2 robot which comes with Finn's code, the GPS controller uses `ros_control` and should be easily modified for other robots with standard `ros_control` hardware interfaces.
 This code is a reimplementation of the guided policy search algorithm and LQG-based trajectory optimization, meant to help others understand, reuse, and build upon existing work.
 
+Our modifications: We used Franka hardware interface instead of Kuka interface that was used in White's code. We connected OptiTrack motion tracking system to feed live positions of the robot and the target to the GPS algorithm. We replaced the realtime trial data publisher (publishes the data acquired in each trial) with a non realtime publisher. Other small modifications include tuning parameters of the initial local controllers, tuning parameters of the initial dynamics model, and clamping the joint torques within certain limits before they are sent to the robot. 
+
 For full documentation, see [rll.berkeley.edu/gps](http://rll.berkeley.edu/gps).
-
-The code base is **a work in progress**. See the [FAQ](http://rll.berkeley.edu/gps/faq.html) for information on planned future additions to the code.
-
-
 
 - [Guided Policy Search](http://proceedings.mlr.press/v28/levine13.html)
 - [End-to-End Training of Deep Visuomotor Policies](https://arxiv.org/abs/1504.00702), the paper on which Chelsea Finn's software is based
@@ -38,6 +36,9 @@ The code base is **a work in progress**. See the [FAQ](http://rll.berkeley.edu/g
 
 - Install ROS and set up a Catkin workspace
 - Build and install Caffe in accordance with the instructions on its web site, making sure to build the distribution files
+```
+cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/pascal/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/pascal/caffe/build/lib
+```
 - Clone the franka_ros and kuka-lwr packages into `catkin_workspace/src` and build with `catkin_make`
 - Clone GPS into `catkin_workspace/src`
 - Install ROS packages: "convex-decomposition", "ivcon", "pr2_description", "pr2_controllers"
@@ -84,15 +85,13 @@ source devel/setup.bash
 roslaunch gps_agent_pkg franka_real.launch robot_ip:=172.16.1.2
 
 ## GPS PC
-# Terminal 3
+# Terminal 3 (for training real robot)
 export ROS_MASTER_URI=http://132.72.96.38:11311
 export ROS_IP=132.72.96.38
 source devel/setup.bash
 python src/real-franka-gps/gps/python/gps/gps_main.py real_franka_badmm_example
 
-python src/real-franka-gps/gps/python/gps/gps_main.py real_franka_badmm_example
-
-
+# Terminal 3 (for testing sim-to-real transfer)
 export ROS_MASTER_URI=http://132.72.96.38:11311
 export ROS_IP=132.72.96.38
 source devel/setup.bash
@@ -100,11 +99,5 @@ cd src/real-franka-gps/gps/
 python python/gps/gps_main.py real_franka_badmm_sim2real -p 1 10
 
 
-MuJoCo to RealRobot - to change in hyperparams: 1. agent type 2. conditions 3. init_var 4. stiffness 5. stiffness_vel
-                                in cost_fk    : 1. jx_full
-
-
-cmake . -DUSE_CAFFE=1 -DCAFFE_INCLUDE_PATH=/home/pascal/caffe/distribute/include -DCAFFE_LIBRARY_PATH=/home/pascal/caffe/build/lib
-
-cd gps/src/gps_agent_pkg/
-source ../../../../../devel/setup.bash
+MuJoCo to RealRobot - parameters to change in hyperparams file: 1. agent type 2. conditions 3. init_var 4. stiffness 5. stiffness_vel
+                                           in cost_fk    : 1. jx_full
