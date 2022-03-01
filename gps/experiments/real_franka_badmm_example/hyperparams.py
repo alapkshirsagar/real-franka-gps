@@ -56,8 +56,8 @@ FRANKA_GAINS = np.array([0.1, 0.1, 0.1, 0.1, 0.001, 0.001, 0.001]) # [24, 12, 10
 
 
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
-# EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_example/'
-EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_example/'
+EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_example/'
+# EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_example/'
 
 x0s = []
 ee_tgts = []

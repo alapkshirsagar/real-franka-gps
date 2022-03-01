@@ -55,8 +55,8 @@ Franka_Gains = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1])
 
 
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
-#EXP_DIR = BASE_DIR + '/../experiments/franka_torque_h2r_badmm/'
-EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/franka_torque_h2r_badmm/'
+EXP_DIR = BASE_DIR + '/../experiments/franka_torque_h2r_badmm/'
+# EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/franka_torque_h2r_badmm/'
 
 common = {
     'experiment_name': 'my_experiment' + '_' + \

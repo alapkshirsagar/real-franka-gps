@@ -52,8 +52,8 @@ SENSOR_DIMS = {
 # Franka_Gains = np.array([24, 12, 10, 7, 1, 1, 1])
 Franka_Gains = np.array([0.5, 0.5,0.5, 0.5, 0.001, 0.001, 0.001])
 BASE_DIR = '/'.join(str.split(gps_filepath, '/')[:-2])
-# EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
-EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
+EXP_DIR = BASE_DIR + '/../experiments/real_franka_badmm_sim2real/'
+# EXP_DIR = '/media/franka2/DATA/Kuka_Franka_Experiment_Data/real_franka_badmm_sim2real/'
 
 common = {
     'experiment_name': 'my_experiment' + '_' + \
