@@ -1,4 +1,6 @@
 # Guided policy search on the Franka-Emika Panda Robot
+Paper: *Kshirsagar, A., *Faibish, T., Hoffman, G. & Biess, A., Lessons Learned from Utilizing Guided Policy Search for Human-Robot Handovers with a Collaborative Robot, International Conference on Robotics, Automation and Artificial Intelligence (RAAI), 2022
+(https://alapkshirsagar.github.io/papers/gpshandovers-raai)
 
 ## Overview
 
